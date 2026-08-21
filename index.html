@@ -13,10 +13,10 @@ select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;backg
 .nav button{border:0;background:none;color:inherit}.progress{height:7px;background:var(--soft);border-radius:99px;overflow:hidden;margin-bottom:22px}.progress>div{height:100%;background:var(--blue);width:0}
 h1{font-size:25px;margin:8px 0 4px}h2{font-size:16px;font-weight:400;color:var(--muted);margin:0 0 8px}
 .info,.status{text-align:center;color:var(--muted);font-size:13px}.status{margin:14px 0}.zh{text-align:center;font-size:26px;line-height:1.55;min-height:85px}.ru{display:none;margin:18px 0;padding:15px;background:#f0f7ff;border-radius:12px;color:#0044cc;font-size:18px;line-height:1.5}
-.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ctrl{border:0;padding:14px 10px;border-radius:12px;background:var(--soft);font-weight:600}.primary{grid-column:span 2;background:var(--blue);color:#fff}.green{grid-column:span 2;background:var(--green);color:#fff}
+.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ctrl{border:0;padding:14px 8px;border-radius:12px;background:var(--soft);font-weight:600}.primary{background:var(--blue);color:#fff}.green{background:var(--green);color:#fff}
 .speed{border-top:1px solid var(--border);margin-top:20px;padding-top:18px;text-align:center}.speed-title{color:var(--muted);font-size:13px;margin-bottom:9px}.speed button{border:0;border-radius:8px;padding:8px 11px;margin:0 3px;background:var(--soft)}.speed .active{background:#1d1d1f;color:#fff}
 .hints{margin-top:20px;padding:12px;background:var(--soft);border-radius:10px;color:var(--muted);font-size:12px;line-height:1.6}.error{display:none;padding:13px;border-radius:10px;background:#fff0f1;color:#b4232d;margin-bottom:15px;font-size:14px;line-height:1.45}
-@media(max-width:520px){.container{padding:18px}.zh{font-size:22px}.ru{font-size:16px}}
+@media(max-width:520px){.container{padding:18px}.zh{font-size:22px}.ru{font-size:16px}.controls{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -30,10 +30,12 @@ h1{font-size:25px;margin:8px 0 4px}h2{font-size:16px;font-weight:400;color:var(-
 <div id="zhText" class="zh">—</div><div id="ruText" class="ru"></div>
 <div class="controls">
 <button class="ctrl" id="pause">⏸ Пауза</button>
-<button class="ctrl primary" id="understood">▶ Дальше</button>
-<button class="green" id="translate">🇷🇺 Перевод</button>
+<button class="ctrl primary" id="next">▶ Дальше</button>
+<button class="ctrl green" id="translate">🇷🇺 Перевод</button>
 </div>
-
+<div class="speed"><div class="speed-title">Скорость китайского</div>
+<button data-speed="1" class="active">1.0×</button><button data-speed=".85">0.85×</button><button data-speed=".75">0.75×</button><button data-speed=".6">0.6×</button></div>
+<div class="hints">Пробел — дальше · T — перевод · P/Enter — пауза/пуск · ←/→ — назад/вперёд · Фраза повторяется по кругу, пока не нажмёте «Дальше»</div>
 </div>
 <audio id="zhAudio" preload="auto"></audio><audio id="ruAudio" preload="auto"></audio>
 <script>
@@ -42,14 +44,17 @@ const CHAPTERS=[
 {id:"ch10",label:"Глава 10",dir:"10",zh:"10.mp3",ru:"10_rus.mp3",json:"chapter.json"}
 ];
 const $=id=>document.getElementById(id),sel=$("chapterSelect"),err=$("error"),zh=$("zhAudio"),ru=$("ruAudio");
-let units=[],i=0,speed=1,playing=false;
+let units=[],i=0,speed=1;
+let zhPlaying=false;    // хотим ли мы, чтобы китайская фраза сейчас проигрывалась/повторялась
+let translating=false;  // сейчас идёт воспроизведение перевода текущей фразы
 CHAPTERS.forEach(c=>{let o=document.createElement("option");o.value=c.id;o.textContent=c.label;sel.appendChild(o)});
 const url=(c,f)=>`BOOK/${c.dir}/${f}`;
 const fmt=s=>Number.isFinite(Number(s))?`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`:"—";
 function error(t){err.textContent=t;err.style.display="block"}
 function clearError(){err.style.display="none"}
+
 async function loadChapter(n){
-  clearError(); units=[];i=0; $("status").textContent="Загружаю chapter.json…";
+  clearError(); units=[];i=0;zhPlaying=false;translating=false; $("status").textContent="Загружаю chapter.json…";
   const c=CHAPTERS[n];
   try{
     const r=await fetch(url(c,c.json),{cache:"no-cache"});
@@ -58,72 +63,93 @@ async function loadChapter(n){
     units=d.units; zh.src=url(c,c.zh);ru.src=url(c,c.ru);zh.playbackRate=ru.playbackRate=speed;
     $("chapterTitle").textContent=`${c.label} · 大雁`;
     $("chapterInfo").textContent=`${units.length} фраз · ${c.zh} + ${c.ru}`;
-    render(false);
+    render(true);
   }catch(e){$("status").textContent="Ошибка загрузки";error(`Не удалось загрузить ${url(c,c.json)}: ${e.message}`)}
 }
-function render(auto){
-  if(!units.length)return;let u=units[i];
+
+// Отрисовать текущую фразу и (опционально) сразу запустить её проигрывание по кругу
+function render(autoplay){
+  if(!units.length)return;const u=units[i];
   $("counter").textContent=`${i+1} / ${units.length}`;$("progressBar").style.width=`${(i+1)/units.length*100}%`;
   $("zhText").textContent=u.zhText||"—";$("ruText").textContent=u.ruText||"—";$("ruText").style.display="none";
   $("status").textContent=`中文 ${fmt(u.zhStart)}–${fmt(u.zhEnd)} · Русский ${fmt(u.ruStart)}–${fmt(u.ruEnd)}`;
-  zh.pause();ru.pause();zh.currentTime=Number(u.zhStart)||0;ru.currentTime=Number(u.ruStart)||0;zh.playbackRate=ru.playbackRate=speed;
-  if(auto)play();
+  translating=false;ru.pause();
+  zh.pause();zh.currentTime=Number(u.zhStart)||0;zh.playbackRate=speed;
+  if(autoplay){playZh()}else{zhPlaying=false;$("pause").textContent="▶ Пуск"}
 }
-async function play(){
-  if(!units.length)return;
-  playing=true;
-  $("pause").textContent="⏸ Пауза";
-  try{await zh.play()}catch(e){}
+
+// Запустить (или продолжить) циклическое проигрывание китайской фразы
+function playZh(){
+  if(!units.length)return;const u=units[i];
+  zhPlaying=true;$("pause").textContent="⏸ Пауза";
+  if(zh.currentTime<Number(u.zhStart)||zh.currentTime>=Number(u.zhEnd)){zh.currentTime=Number(u.zhStart)||0}
+  zh.play().catch(()=>{});
 }
-function pause(){zh.pause();ru.pause();playing=false;$("pause").textContent="▶ Пуск"}
-function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pause();$("status").textContent="Глава закончена"}}
+function pauseZh(){zh.pause();zhPlaying=false;$("pause").textContent="▶ Пуск"}
+function togglePause(){
+  if(translating){ru.pause();translating=false;pauseZh();return}
+  zhPlaying?pauseZh():playZh();
+}
+function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pauseZh();$("status").textContent="Глава закончена"}}
 function prev(){if(!units.length)return;i=Math.max(0,i-1);render(true)}
-$("pause").onclick=()=>{
-  if(playing){
-    pause();
-  }else{
-    play();
+
+// Зацикливание: как только доходим до конца сегмента фразы — возвращаемся к его началу
+zh.addEventListener("timeupdate",()=>{
+  if(!units.length)return;const u=units[i];
+  if(zh.currentTime>=Number(u.zhEnd)){
+    if(zhPlaying&&!translating){zh.currentTime=Number(u.zhStart)||0;zh.play().catch(()=>{})}
+    else{zh.pause()}
   }
-};
-$("understood").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
-$("translate").onclick=async ()=>{
-  if(!units.length)return;
-  const box=$("ruText");
-  box.textContent=units[i].ruText||"—";
-  box.style.display="block";
-  const u=units[i];
-  ru.pause();
-  ru.currentTime=Number(u.ruStart)||0;
-  ru.playbackRate=speed;
-  try{await ru.play()}catch(e){}
-};
-  const box=$("ruText");
+});
+zh.addEventListener("ended",()=>{
+  if(zhPlaying&&!translating){const u=units[i];zh.currentTime=Number(u.zhStart)||0;zh.play().catch(()=>{})}
+});
+
+// Перевод: показывает текст и один раз проигрывает соответствующий русский сегмент,
+// на время перевода китайская фраза приостанавливается, потом (если играла) продолжает цикл
+async function toggleTranslate(){
+  if(!units.length)return;const box=$("ruText");
   const showing=box.style.display!=="none";
   if(showing){
     box.style.display="none";
-    ru.pause();
+    if(translating){ru.pause();translating=false;if(zhPlaying)playZh()}
     return;
   }
-  box.style.display="block";
-  const u=units[i];
-  ru.pause();
-  ru.currentTime=Number(u.ruStart)||0;
-  ru.playbackRate=speed;
+  box.style.display="block";const u=units[i];
+  zh.pause();translating=true;
+  ru.currentTime=Number(u.ruStart)||0;ru.playbackRate=speed;
   try{await ru.play()}catch(e){}
-};
-sel.onchange=()=>loadChapter(sel.selectedIndex);
-document.querySelectorAll(".speed button").forEach(b=>b.onclick=()=>{speed=Number(b.dataset.speed);document.querySelectorAll(".speed button").forEach(x=>x.classList.remove("active"));b.classList.add("active");zh.playbackRate=ru.playbackRate=speed});
-document.addEventListener("keydown",e=>{if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();next()}else if(e.key.toLowerCase()==="t")$("translate").click();else if(e.key.toLowerCase()==="p"||e.key==="Enter"){e.preventDefault();$("pause").click()}else if(e.key==="ArrowLeft")prev();else if(e.key==="ArrowRight")next()});
-zh.addEventListener("timeupdate",()=>{
-  if(!units.length)return;
-  const u=units[i];
-  if(zh.currentTime>=Number(u.zhEnd)){
-    zh.currentTime=Number(u.zhStart)||0;
-    if(playing) zh.play().catch(()=>{});
-  }
+}
+function finishTranslation(){translating=false;if(zhPlaying)playZh()}
+ru.addEventListener("timeupdate",()=>{
+  if(!units.length||!translating)return;const u=units[i];
+  if(ru.currentTime>=Number(u.ruEnd)){ru.pause();finishTranslation()}
 });
-ru.addEventListener("timeupdate",()=>{if(units.length&&ru.currentTime>=Number(units[i].ruEnd))ru.pause()});
-if("mediaSession"in navigator){navigator.mediaSession.setActionHandler("play",play);navigator.mediaSession.setActionHandler("pause",pause);navigator.mediaSession.setActionHandler("nexttrack",next);navigator.mediaSession.setActionHandler("previoustrack",prev)}
+ru.addEventListener("ended",()=>{if(translating)finishTranslation()});
+
+$("pause").onclick=togglePause;
+$("next").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
+$("translate").onclick=toggleTranslate;
+sel.onchange=()=>loadChapter(sel.selectedIndex);
+document.querySelectorAll(".speed button").forEach(b=>b.onclick=()=>{
+  speed=Number(b.dataset.speed);
+  document.querySelectorAll(".speed button").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");zh.playbackRate=ru.playbackRate=speed;
+});
+document.addEventListener("keydown",e=>{
+  if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
+  if(e.code==="Space"){e.preventDefault();next()}
+  else if(e.key.toLowerCase()==="t")$("translate").click();
+  else if(e.key.toLowerCase()==="p"||e.key==="Enter"){e.preventDefault();togglePause()}
+  else if(e.key==="ArrowLeft")prev();
+  else if(e.key==="ArrowRight")next();
+});
+if("mediaSession"in navigator){
+  navigator.mediaSession.setActionHandler("play",playZh);
+  navigator.mediaSession.setActionHandler("pause",pauseZh);
+  navigator.mediaSession.setActionHandler("nexttrack",next);
+  navigator.mediaSession.setActionHandler("previoustrack",prev);
+}
 loadChapter(0);
 </script>
 </body></html>
