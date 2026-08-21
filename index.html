@@ -1,298 +1,87 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大雁 · Тренажёр аудирования</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f5f5f7;
-            color: #1d1d1f;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-        h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        h2 {
-            font-size: 18px;
-            color: #86868b;
-            font-weight: 400;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        .nav-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            color: #06c;
-        }
-        .nav-top a {
-            text-decoration: none;
-            color: inherit;
-            cursor: pointer;
-        }
-        .error-msg {
-            background-color: #ffeef0;
-            color: #d9383a;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            text-align: left;
-            line-height: 1.4;
-            display: none; /* Скроем по умолчанию, если файлы загрузятся */
-        }
-        .status {
-            font-size: 16px;
-            color: #86868b;
-            margin-bottom: 25px;
-        }
-        .controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 25px;
-        }
-        button {
-            background-color: #f5f5f7;
-            border: none;
-            padding: 15px 10px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            color: #1d1d1f;
-        }
-        button:active {
-            transform: scale(0.98);
-            background-color: #e8e8ed;
-        }
-        button.primary {
-            background-color: #0071e3;
-            color: white;
-            grid-column: span 2;
-            font-size: 18px;
-            padding: 18px;
-        }
-        button.primary:active {
-            background-color: #0077ed;
-        }
-        button.secondary {
-            background-color: #34c759;
-            color: white;
-            grid-column: span 2;
-        }
-        .speed-section {
-            margin-top: 20px;
-            border-top: 1px solid #e8e8ed;
-            padding-top: 20px;
-        }
-        .speed-title {
-            font-size: 14px;
-            color: #86868b;
-            margin-bottom: 10px;
-        }
-        .speed-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-        }
-        .speed-btn {
-            background: #e8e8ed;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-        .speed-btn.active {
-            background: #1d1d1f;
-            color: white;
-        }
-        .hints {
-            margin-top: 25px;
-            font-size: 12px;
-            color: #86868b;
-            line-height: 1.6;
-            text-align: left;
-            background: #f5f5f7;
-            padding: 12px;
-            border-radius: 10px;
-        }
-        .translation-display {
-            margin-top: 15px;
-            padding: 15px;
-            background: #f0f7ff;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 500;
-            color: #0044cc;
-            display: none;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>大雁 · Тренажёр аудирования</title>
+<style>
+:root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#86868b;--blue:#0071e3;--green:#34c759;--soft:#f0f0f5;--border:#e5e5ea}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding:20px}
+.container{width:min(760px,100%);margin:auto;background:var(--card);padding:24px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.top,.nav{display:flex;align-items:center;justify-content:space-between;gap:10px}.top{margin-bottom:18px}.nav{color:var(--blue);margin-bottom:16px}
+select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff}button{font:inherit;cursor:pointer}
+.nav button{border:0;background:none;color:inherit}.progress{height:7px;background:var(--soft);border-radius:99px;overflow:hidden;margin-bottom:22px}.progress>div{height:100%;background:var(--blue);width:0}
+h1{font-size:25px;margin:8px 0 4px}h2{font-size:16px;font-weight:400;color:var(--muted);margin:0 0 8px}
+.info,.status{text-align:center;color:var(--muted);font-size:13px}.status{margin:14px 0}.zh{text-align:center;font-size:26px;line-height:1.55;min-height:85px}.ru{display:none;margin:18px 0;padding:15px;background:#f0f7ff;border-radius:12px;color:#0044cc;font-size:18px;line-height:1.5}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.ctrl{border:0;padding:14px 10px;border-radius:12px;background:var(--soft);font-weight:600}.primary{grid-column:span 2;background:var(--blue);color:#fff}.green{grid-column:span 2;background:var(--green);color:#fff}
+.speed{border-top:1px solid var(--border);margin-top:20px;padding-top:18px;text-align:center}.speed-title{color:var(--muted);font-size:13px;margin-bottom:9px}.speed button{border:0;border-radius:8px;padding:8px 11px;margin:0 3px;background:var(--soft)}.speed .active{background:#1d1d1f;color:#fff}
+.hints{margin-top:20px;padding:12px;background:var(--soft);border-radius:10px;color:var(--muted);font-size:12px;line-height:1.6}.error{display:none;padding:13px;border-radius:10px;background:#fff0f1;color:#b4232d;margin-bottom:15px;font-size:14px;line-height:1.45}
+@media(max-width:520px){.container{padding:18px}.zh{font-size:22px}.ru{font-size:16px}}
+</style>
 </head>
 <body>
-
 <div class="container">
-    <div class="nav-top">
-        <a id="btn-prev">← пред.</a>
-        <span>Предложение 1 / 41</span>
-        <span style="opacity: 0">→</span>
-    </div>
-
-    <h1>大雁 · 听力训练</h1>
-    <h2>Тренажёр аудирования</h2>
-
-    <div class="error-msg" id="error-block">
-        Не удаётся загрузить аудиофайлы (02.mp3 / 02_rus.mp3). Убедитесь, что index.html лежит в одной папке с этими двумя файлами, и откройте страницу через локальный server (например, через Live Server), если браузер блокирует локальные файлы.
-    </div>
-
-    <div class="status">中文 · слушаем предложение</div>
-    
-    <div class="translation-display" id="translation-box">
-        [Здесь будет русский перевод фразы]
-    </div>
-
-    <p style="font-size: 13px; color: #86868b; margin-bottom: 15px;">Играет по кругу — жмите «Понял», когда разберёте фразу</p>
-
-    <div class="controls">
-        <button id="btn-pause">⏸ Пауза</button>
-        <button id="btn-repeat">🔁 Повторить</button>
-        <button class="secondary" id="btn-translate">🇷🇺 Не понял — перевод</button>
-        <button class="primary" id="btn-next">✅ Понял — дальше</button>
-    </div>
-
-    <div class="speed-section">
-        <div class="speed-title">Скорость китайского:</div>
-        <div class="speed-buttons">
-            <button class="speed-btn active">1.0×</button>
-            <button class="speed-btn">0.85×</button>
-            <button class="speed-btn">0.75×</button>
-            <button class="speed-btn">0.6×</button>
-        </div>
-    </div>
-
-    <div class="hints">
-        Пробел — «Понял / дальше». T — перевод. P или Enter — пауза/пуск. ← / → — назад/вперёд по фразам.
-    </div>
+<div class="top"><strong>Глава</strong><select id="chapterSelect"></select></div>
+<div id="error" class="error"></div>
+<div class="nav"><button id="prev">← пред.</button><span id="counter">— / —</span><button id="nextTop">след. →</button></div>
+<div class="progress"><div id="progressBar"></div></div>
+<h1 id="chapterTitle">大雁 · 听力训练</h1><h2>Тренажёр аудирования</h2>
+<div id="chapterInfo" class="info"></div><div id="status" class="status">Загрузка…</div>
+<div id="zhText" class="zh">—</div><div id="ruText" class="ru"></div>
+<div class="controls">
+<button class="ctrl" id="pause">⏸ Пауза</button><button class="ctrl" id="repeat">🔁 Повторить</button>
+<button class="green" id="translate">🇷🇺 Показать перевод</button><button class="ctrl primary" id="understood">✅ Понял — дальше</button>
 </div>
-
-<!-- Скрытый аудиоэлемент для работы медиа-сессии -->
-<audio id="audio-player" loop src="02.mp3" preload="auto"></audio>
-
+<div class="speed"><div class="speed-title">Скорость китайского</div>
+<button data-speed="1" class="active">1.0×</button><button data-speed=".85">0.85×</button><button data-speed=".75">0.75×</button><button data-speed=".6">0.6×</button></div>
+<div class="hints">Пробел — дальше · T — перевод · P/Enter — пауза/пуск · ←/→ — назад/вперёд</div>
+</div>
+<audio id="zhAudio" preload="auto"></audio><audio id="ruAudio" preload="auto"></audio>
 <script>
-    // Эмуляция базовой логики интерфейса, чтобы кнопки кликались
-    const audio = document.getElementById('audio-player');
-    const translationBox = document.getElementById('translation-box');
-    const errorBlock = document.getElementById('error-block');
-
-    // Проверка доступности файлов (простая демонстрация)
-    audio.addEventListener('error', () => {
-        errorBlock.style.display = 'block';
-    });
-
-    // Обработчики кликов по кнопкам
-    document.getElementById('btn-next').addEventListener('click', () => {
-        alert('Переход к следующему предложению (✅ Понял — дальше)');
-        translationBox.style.display = 'none';
-        // Тут ваша логика смены аудио на 03.mp3 и т.д.
-    });
-
-    document.getElementById('btn-translate').addEventListener('click', () => {
-        translationBox.style.display = 'block';
-    });
-
-    document.getElementById('btn-pause').addEventListener('click', () => {
-        if (audio.paused) {
-            audio.play().catch(()=>{});
-            document.getElementById('btn-pause').textContent = '⏸ Пауза';
-        } else {
-            audio.pause();
-            document.getElementById('btn-pause').textContent = '▶ Пуск';
-        }
-    });
-
-    document.getElementById('btn-repeat').addEventListener('click', () => {
-        audio.currentTime = 0;
-        audio.play().catch(()=>{});
-    });
-
-    document.getElementById('btn-prev').addEventListener('click', () => {
-        alert('Возврат назад (← пред.)');
-    </pre>
-    
-    // Автозапуск для инициализации Media Session на мобильных устройствах при первом клике
-    document.body.addEventListener('click', () => {
-        if (audio.paused && audio.src) {
-            audio.play().catch(()=>{});
-        }
-    }, { once: true });
-
-    /* =======================================================
-       ИНТЕГРАЦИЯ AIRPODS (MEDIA SESSION API)
-       ======================================================= */
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: 'Тренажёр аудирования',
-            artist: 'Китайский язык',
-            album: '大雁'
-        });
-
-        // Универсальный хелпер для симуляции клика по кнопкам страницы
-        const clickButtonByText = (text) => {
-            const buttons = Array.from(document.querySelectorAll('button, div, span, a'));
-            const btn = buttons.find(b => b.textContent.includes(text));
-            if (btn) {
-                btn.click();
-            }
-        };
-
-        // 1 КАСАНИЕ НА AIRPODS (Система шлет сигнал Пауза или Воспроизведение)
-        // Назначаем его на перелистывание фразы вперед
-        navigator.mediaSession.setActionHandler('pause', () => {
-            clickButtonByText('Понял — дальше');
-        });
-        
-        navigator.mediaSession.setActionHandler('play', () => {
-            clickButtonByText('Понял — дальше');
-        });
-
-        // 2 КАСАНИЯ НА AIRPODS (Система шлет сигнал "Следующий трек")
-        // Назначаем его на открытие перевода
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            clickButtonByText('Не понял — перевод');
-        });
-
-        // 3 КАСАНИЯ НА AIRPODS (Система шлет сигнал "Предыдущий трек")
-        // Назначаем его на возврат к прошлому предложению
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            clickButtonByText('пред.');
-        });
-    }
+const CHAPTERS=[
+{id:"ch3",label:"Глава 3",dir:"03",zh:"03.mp3",ru:"03_rus.mp3",json:"chapter.json"},
+{id:"ch10",label:"Глава 10",dir:"10",zh:"10.mp3",ru:"10_rus.mp3",json:"chapter.json"}
+];
+const $=id=>document.getElementById(id),sel=$("chapterSelect"),err=$("error"),zh=$("zhAudio"),ru=$("ruAudio");
+let units=[],i=0,speed=1,playing=false;
+CHAPTERS.forEach(c=>{let o=document.createElement("option");o.value=c.id;o.textContent=c.label;sel.appendChild(o)});
+const url=(c,f)=>`BOOK/${c.dir}/${f}`;
+const fmt=s=>Number.isFinite(Number(s))?`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`:"—";
+function error(t){err.textContent=t;err.style.display="block"}
+function clearError(){err.style.display="none"}
+async function loadChapter(n){
+  clearError(); units=[];i=0; $("status").textContent="Загружаю chapter.json…";
+  const c=CHAPTERS[n];
+  try{
+    const r=await fetch(url(c,c.json),{cache:"no-cache"});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json(); if(!Array.isArray(d.units)||!d.units.length)throw new Error("нет units");
+    units=d.units; zh.src=url(c,c.zh);ru.src=url(c,c.ru);zh.playbackRate=ru.playbackRate=speed;
+    $("chapterTitle").textContent=`${c.label} · 大雁`;
+    $("chapterInfo").textContent=`${units.length} фраз · ${c.zh} + ${c.ru}`;
+    render(false);
+  }catch(e){$("status").textContent="Ошибка загрузки";error(`Не удалось загрузить ${url(c,c.json)}: ${e.message}`)}
+}
+function render(auto){
+  if(!units.length)return;let u=units[i];
+  $("counter").textContent=`${i+1} / ${units.length}`;$("progressBar").style.width=`${(i+1)/units.length*100}%`;
+  $("zhText").textContent=u.zhText||"—";$("ruText").textContent=u.ruText||"—";$("ruText").style.display="none";
+  $("status").textContent=`中文 ${fmt(u.zhStart)}–${fmt(u.zhEnd)} · Русский ${fmt(u.ruStart)}–${fmt(u.ruEnd)}`;
+  zh.pause();ru.pause();zh.currentTime=Number(u.zhStart)||0;ru.currentTime=Number(u.ruStart)||0;zh.playbackRate=ru.playbackRate=speed;
+  if(auto)play();
+}
+async function play(){if(!units.length)return;playing=true;$("pause").textContent="⏸ Пауза";try{await zh.play()}catch(e){}try{await ru.play()}catch(e){}}
+function pause(){zh.pause();ru.pause();playing=false;$("pause").textContent="▶ Пуск"}
+function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pause();$("status").textContent="Глава закончена"}}
+function prev(){if(!units.length)return;i=Math.max(0,i-1);render(true)}
+$("pause").onclick=()=>playing?pause():play();$("repeat").onclick=()=>render(true);$("understood").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
+$("translate").onclick=()=>{$("ruText").style.display=$("ruText").style.display==="none"?"block":"none"};
+sel.onchange=()=>loadChapter(sel.selectedIndex);
+document.querySelectorAll(".speed button").forEach(b=>b.onclick=()=>{speed=Number(b.dataset.speed);document.querySelectorAll(".speed button").forEach(x=>x.classList.remove("active"));b.classList.add("active");zh.playbackRate=ru.playbackRate=speed});
+document.addEventListener("keydown",e=>{if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();next()}else if(e.key.toLowerCase()==="t")$("translate").click();else if(e.key.toLowerCase()==="p"||e.key==="Enter"){e.preventDefault();$("pause").click()}else if(e.key==="ArrowLeft")prev();else if(e.key==="ArrowRight")next()});
+zh.addEventListener("timeupdate",()=>{if(units.length&&zh.currentTime>=Number(units[i].zhEnd))zh.pause()});
+ru.addEventListener("timeupdate",()=>{if(units.length&&ru.currentTime>=Number(units[i].ruEnd))ru.pause()});
+if("mediaSession"in navigator){navigator.mediaSession.setActionHandler("play",play);navigator.mediaSession.setActionHandler("pause",pause);navigator.mediaSession.setActionHandler("nexttrack",next);navigator.mediaSession.setActionHandler("previoustrack",prev)}
+loadChapter(0);
 </script>
-
-</body>
-</html>
+</body></html>
