@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LooperKit Player</title>
+    <title>大雁 · Тренажёр аудирования</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #121212;
             color: #ffffff;
             display: flex;
@@ -18,109 +18,204 @@
             text-align: center;
         }
         .container {
-            padding: 20px;
-            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            padding: 30px;
+            border-radius: 20px;
             background: #1e1e1e;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        button {
-            background-color: #007aff;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background 0.2s;
-        }
-        button:active {
-            background-color: #0051a8;
-        }
-        .status {
-            margin-top: 15px;
+        .header {
             font-size: 14px;
             color: #8e8e93;
+            margin-bottom: 20px;
+        }
+        .nav-links {
+            color: #007aff;
+            text-decoration: none;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+        h1 {
+            font-size: 28px;
+            margin: 10px 0;
+        }
+        h2 {
+            font-size: 20px;
+            color: #34c759;
+            margin-bottom: 30px;
+        }
+        .loading {
+            font-size: 22px;
+            color: #eaeaea;
+            margin: 40px 0;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background-color: #2c2c2e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+        .btn:active {
+            transform: scale(0.96);
+            background-color: #3a3a3c;
+        }
+        .btn-active {
+            background-color: #007aff;
+        }
+        .speed-title {
+            font-size: 14px;
+            color: #8e8e93;
+            margin-bottom: 10px;
+        }
+        .speed-options {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 30px;
+        }
+        .speed-btn {
+            background: none;
+            border: 1px solid #3a3a3c;
+            color: #8e8e93;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .speed-btn.active {
+            border-color: #007aff;
+            color: #007aff;
+        }
+        .hints {
+            font-size: 13px;
+            color: #8e8e93;
+            line-height: 1.6;
+            border-top: 1px solid #2c2c2e;
+            padding-top: 20px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>LooperKit Player</h1>
-    <p id="display-text">Режим: Ожидание запуска</p>
-    
-    <button id="start-btn" onclick="initPlayer()">Активировать плеер</button>
-    
-    <div class="status" id="status-text">Нажмите кнопку, чтобы подключить AirPods</div>
+    <div class="header">
+        <strong>Глава</strong><br><br>
+        <a href="#" class="nav-links">← пред.</a> — / — <a href="#" class="nav-links">след. →</a>
+    </div>
+
+    <h1>大雁 · 听力训练</h1>
+    <h2>Тренажёр аудирования</h2>
+
+    <div class="loading" id="status-display">Загрузка…</div>
+
+    <div class="controls">
+        <button class="btn" onclick="togglePause()">⏸ Пауза</button>
+        <button class="btn btn-active" onclick="goNext()">▶ Дальше</button>
+        <button class="btn" onclick="getTranslation()">🇷🇺 Перевод</button>
+    </div>
+
+    <div class="speed-title">Скорость китайского</div>
+    <div class="speed-options">
+        <button class="speed-btn active" onclick="setSpeed(1.0)">1.0×</button>
+        <button class="speed-btn" onclick="setSpeed(0.85)">0.85×</button>
+        <button class="speed-btn" onclick="setSpeed(0.75)">0.75×</button>
+        <button class="speed-btn" onclick="setSpeed(0.6)">0.6×</button>
+    </div>
+
+    <div class="hints">
+        Пробел — дальше · T — перевод · P/Enter — пауза/пуск · ←/→ — назад/вперёд<br>
+        Фраза повторяется по кругу, пока не нажмёте «Дальше»
+    </div>
 </div>
 
 <script>
-    let audioCtx = null;
+    // --- ВАША ОРИГИНАЛЬНАЯ ЛОГИКА ИНТЕРФЕЙСА ---
+    
+    function togglePause() {
+        document.getElementById('status-display').innerText = "⏸ Пауза";
+        console.log("Нажата пауза");
+        // Здесь будет ваш код остановки звука
+    }
 
-    function initPlayer() {
-        if (audioCtx) return;
+    function goNext() {
+        document.getElementById('status-display').innerText = "Воспроизведение новой фразы...";
+        console.log("Переход к следующей фразе");
+        activateAirPods(); // Активируем наушники при первом же клике на "Дальше"
+        // Здесь будет ваш код загрузки следующей фразы
+    }
+
+    function getTranslation() {
+        document.getElementById('status-display').innerText = "Перевод: [Здесь появится текст]";
+        console.log("Запрошен перевод");
+        activateAirPods();
+        // Здесь будет ваш код показа перевода
+    }
+
+    function setSpeed(speed) {
+        const buttons = document.querySelectorAll('.speed-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        console.log("Скорость изменена на: " + speed);
+    }
+
+    // --- ИНТЕГРАЦИЯ С AIRPODS ---
+    let airposCtx = null;
+
+    function activateAirPods() {
+        if (airposCtx) return;
 
         try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            
-            const bufferSize = 2 * audioCtx.sampleRate;
-            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-            const output = noiseBuffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                output[i] = 0.0;
+            // Создаем скрытый фоновый звук, чтобы Safari не отключал наушники
+            airposCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const buffer = airposCtx.createBuffer(1, 2 * airposCtx.sampleRate, airposCtx.sampleRate);
+            const source = airposCtx.createBufferSource();
+            source.buffer = buffer;
+            source.loop = true;
+            source.connect(airposCtx.destination);
+            source.start();
+
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: '大雁 · 听力训练',
+                    artist: 'Тренажёр аудирования'
+                });
+
+                // Тройной тап на левом наушнике (Команда "Вперед") -> Переключает дальше
+                navigator.mediaSession.setActionHandler('nexttrack', () => {
+                    goNext();
+                });
+
+                // Двойной тап на левом наушнике (Команда "Назад") -> Показывает перевод
+                navigator.mediaSession.setActionHandler('previoustrack', () => {
+                    getTranslation();
+                });
+
+                navigator.mediaSession.setActionHandler('play', () => { if (airposCtx) airposCtx.resume(); });
+                navigator.mediaSession.setActionHandler('pause', () => { });
             }
-
-            const whiteNoise = audioCtx.createBufferSource();
-            whiteNoise.buffer = noiseBuffer;
-            whiteNoise.loop = true;
-            whiteNoise.connect(audioCtx.destination);
-            whiteNoise.start();
-
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('status-text').innerText = 'Плеер активен! Используйте жесты AirPods.';
-            document.getElementById('display-text').innerText = 'Текущий трек: №1';
-
-            setupMediaSession();
         } catch (e) {
-            alert('Ошибка запуска аудио: ' + e);
+            console.log("Аудио-сессия AirPods заблокирована до первого клика");
         }
     }
 
-    function setupMediaSession() {
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: 'LooperKit Control',
-                artist: 'My AirPods Player'
-            });
-
-            navigator.mediaSession.setActionHandler('nexttrack', () => {
-                actionNext();
-            });
-
-            navigator.mediaSession.setActionHandler('previoustrack', () => {
-                translateToRussian();
-            });
-            
-            navigator.mediaSession.setActionHandler('play', () => { if(audioCtx) audioCtx.resume(); });
-            navigator.mediaSession.setActionHandler('pause', () => { });
-        } else {
-            document.getElementById('status-text').innerText = 'Браузер не поддерживает MediaSession API';
-        }
-    }
-
-    let trackNumber = 1;
-
-    function actionNext() {
-        trackNumber++;
-        document.getElementById('display-text').innerText = 'Текущий трек: №' + trackNumber;
-        console.log('Переключено на трек №' + trackNumber);
-    }
-
-    function translateToRussian() {
-        document.getElementById('display-text').innerText = 'Переведено на РУССКИЙ язык';
-        console.log('Включен русский язык');
-    }
+    // Слушаем стандартные клавиши клавиатуры, как у вас написано в подсказках
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space') { e.preventDefault(); goNext(); }
+        if (e.key === 't' || e.key === 'е') { getTranslation(); }
+        if (e.key === 'p' || e.key === 'з' || e.key === 'Enter') { togglePause(); }
+    });
 </script>
 
 </body>
