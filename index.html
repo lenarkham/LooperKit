@@ -70,12 +70,32 @@ function render(auto){
   zh.pause();ru.pause();zh.currentTime=Number(u.zhStart)||0;ru.currentTime=Number(u.ruStart)||0;zh.playbackRate=ru.playbackRate=speed;
   if(auto)play();
 }
-async function play(){if(!units.length)return;playing=true;$("pause").textContent="⏸ Пауза";try{await zh.play()}catch(e){}try{await ru.play()}catch(e){}}
+async function play(){
+  if(!units.length)return;
+  playing=true;
+  $("pause").textContent="⏸ Пауза";
+  try{await zh.play()}catch(e){}
+}
 function pause(){zh.pause();ru.pause();playing=false;$("pause").textContent="▶ Пуск"}
 function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pause();$("status").textContent="Глава закончена"}}
 function prev(){if(!units.length)return;i=Math.max(0,i-1);render(true)}
 $("pause").onclick=()=>playing?pause():play();$("repeat").onclick=()=>render(true);$("understood").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
-$("translate").onclick=()=>{$("ruText").style.display=$("ruText").style.display==="none"?"block":"none"};
+$("translate").onclick=async ()=>{
+  if(!units.length)return;
+  const box=$("ruText");
+  const showing=box.style.display!=="none";
+  if(showing){
+    box.style.display="none";
+    ru.pause();
+    return;
+  }
+  box.style.display="block";
+  const u=units[i];
+  ru.pause();
+  ru.currentTime=Number(u.ruStart)||0;
+  ru.playbackRate=speed;
+  try{await ru.play()}catch(e){}
+};
 sel.onchange=()=>loadChapter(sel.selectedIndex);
 document.querySelectorAll(".speed button").forEach(b=>b.onclick=()=>{speed=Number(b.dataset.speed);document.querySelectorAll(".speed button").forEach(x=>x.classList.remove("active"));b.classList.add("active");zh.playbackRate=ru.playbackRate=speed});
 document.addEventListener("keydown",e=>{if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();next()}else if(e.key.toLowerCase()==="t")$("translate").click();else if(e.key.toLowerCase()==="p"||e.key==="Enter"){e.preventDefault();$("pause").click()}else if(e.key==="ArrowLeft")prev();else if(e.key==="ArrowRight")next()});
