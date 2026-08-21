@@ -216,6 +216,29 @@
         if (e.key === 'p' || e.key === 'з' || e.key === 'Enter') { togglePause(); }
     });
 </script>
+<script>
+    // Чистая настройка AirPods по вашему тесту (вставить перед </body>)
+    if ('mediaSession' in navigator) {
+
+        // 2 касания (nexttrack) -> запускает ваше действие "Дальше"
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            if (typeof goNext === 'function') goNext();
+        });
+
+        // 3 касания (previoustrack) -> запускает ваше действие "Перевод"
+        navigator.mediaSession.setActionHandler('previoustrack', () => {
+            if (typeof getTranslation === 'function') getTranslation();
+        });
+
+        // Базовые заглушки для экрана блокировки iOS
+        navigator.mediaSession.setActionHandler('play', () => {
+            if (typeof togglePause === 'function') togglePause();
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            if (typeof togglePause === 'function') togglePause();
+        });
+    }
+</script>
 
 </body>
 </html>
