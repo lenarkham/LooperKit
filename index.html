@@ -29,12 +29,11 @@ h1{font-size:25px;margin:8px 0 4px}h2{font-size:16px;font-weight:400;color:var(-
 <div id="chapterInfo" class="info"></div><div id="status" class="status">Загрузка…</div>
 <div id="zhText" class="zh">—</div><div id="ruText" class="ru"></div>
 <div class="controls">
-<button class="ctrl" id="pause">⏸ Пауза</button><button class="ctrl" id="repeat">🔁 Повторить</button>
-<button class="green" id="translate">🇷🇺 Показать перевод</button><button class="ctrl primary" id="understood">✅ Понял — дальше</button>
+<button class="ctrl" id="pause">⏸ Пауза</button>
+<button class="ctrl primary" id="understood">▶ Дальше</button>
+<button class="green" id="translate">🇷🇺 Перевод</button>
 </div>
-<div class="speed"><div class="speed-title">Скорость китайского</div>
-<button data-speed="1" class="active">1.0×</button><button data-speed=".85">0.85×</button><button data-speed=".75">0.75×</button><button data-speed=".6">0.6×</button></div>
-<div class="hints">Пробел — дальше · T — перевод · P/Enter — пауза/пуск · ←/→ — назад/вперёд</div>
+
 </div>
 <audio id="zhAudio" preload="auto"></audio><audio id="ruAudio" preload="auto"></audio>
 <script>
@@ -79,9 +78,25 @@ async function play(){
 function pause(){zh.pause();ru.pause();playing=false;$("pause").textContent="▶ Пуск"}
 function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pause();$("status").textContent="Глава закончена"}}
 function prev(){if(!units.length)return;i=Math.max(0,i-1);render(true)}
-$("pause").onclick=()=>playing?pause():play();$("repeat").onclick=()=>render(true);$("understood").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
+$("pause").onclick=()=>{
+  if(playing){
+    pause();
+  }else{
+    play();
+  }
+};
+$("understood").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
 $("translate").onclick=async ()=>{
   if(!units.length)return;
+  const box=$("ruText");
+  box.textContent=units[i].ruText||"—";
+  box.style.display="block";
+  const u=units[i];
+  ru.pause();
+  ru.currentTime=Number(u.ruStart)||0;
+  ru.playbackRate=speed;
+  try{await ru.play()}catch(e){}
+};
   const box=$("ruText");
   const showing=box.style.display!=="none";
   if(showing){
@@ -99,7 +114,14 @@ $("translate").onclick=async ()=>{
 sel.onchange=()=>loadChapter(sel.selectedIndex);
 document.querySelectorAll(".speed button").forEach(b=>b.onclick=()=>{speed=Number(b.dataset.speed);document.querySelectorAll(".speed button").forEach(x=>x.classList.remove("active"));b.classList.add("active");zh.playbackRate=ru.playbackRate=speed});
 document.addEventListener("keydown",e=>{if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;if(e.code==="Space"){e.preventDefault();next()}else if(e.key.toLowerCase()==="t")$("translate").click();else if(e.key.toLowerCase()==="p"||e.key==="Enter"){e.preventDefault();$("pause").click()}else if(e.key==="ArrowLeft")prev();else if(e.key==="ArrowRight")next()});
-zh.addEventListener("timeupdate",()=>{if(units.length&&zh.currentTime>=Number(units[i].zhEnd))zh.pause()});
+zh.addEventListener("timeupdate",()=>{
+  if(!units.length)return;
+  const u=units[i];
+  if(zh.currentTime>=Number(u.zhEnd)){
+    zh.currentTime=Number(u.zhStart)||0;
+    if(playing) zh.play().catch(()=>{});
+  }
+});
 ru.addEventListener("timeupdate",()=>{if(units.length&&ru.currentTime>=Number(units[i].ruEnd))ru.pause()});
 if("mediaSession"in navigator){navigator.mediaSession.setActionHandler("play",play);navigator.mediaSession.setActionHandler("pause",pause);navigator.mediaSession.setActionHandler("nexttrack",next);navigator.mediaSession.setActionHandler("previoustrack",prev)}
 loadChapter(0);
