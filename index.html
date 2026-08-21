@@ -1,38 +1,38 @@
-<!doctype html>
-<html lang="ru">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>е¤§й›Ѓ В· РўСЂРµРЅР°Р¶С‘СЂ Р°СѓРґРёСЂРѕРІР°РЅРёСЏ</title>
 <title>大雁 · Тренажёр аудирования</title>
 <style>
 :root{--bg:#f5f5f7;--card:#fff;--text:#1d1d1f;--muted:#86868b;--blue:#0071e3;--green:#34c759;--soft:#f0f0f5;--border:#e5e5ea}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;padding:20px}
-.container{width:min(760px,100%);margin:auto;background:var(--card);padding:24px;border-radius:20px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-.top,.nav{display:flex;align-items:center;justify-content:space-between;gap:10px}.top{margin-bottom:18px}.nav{color:var(--blue);margin-bottom:16px}
-select{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff}button{font:inherit;cursor:pointer}
-.nav button{border:0;background:none;color:inherit}.progress{height:7px;background:var(--soft);border-radius:99px;overflow:hidden;margin-bottom:22px}.progress>div{height:100%;background:var(--blue);width:0}
-h1{font-size:25px;margin:8px 0 4px}h2{font-size:16px;font-weight:400;color:var(--muted);margin:0 0 8px}
-.info,.status{text-align:center;color:var(--muted);font-size:13px}.status{margin:14px 0}.zh{text-align:center;font-size:26px;line-height:1.55;min-height:85px}.ru{display:none;margin:18px 0;padding:15px;background:#f0f7ff;border-radius:12px;color:#0044cc;font-size:18px;line-height:1.5}
-.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.ctrl{border:0;padding:14px 8px;border-radius:12px;background:var(--soft);font-weight:600}.primary{background:var(--blue);color:#fff}.green{background:var(--green);color:#fff}
-.speed{border-top:1px solid var(--border);margin-top:20px;padding-top:18px;text-align:center}.speed-title{color:var(--muted);font-size:13px;margin-bottom:9px}.speed button{border:0;border-radius:8px;padding:8px 11px;margin:0 3px;background:var(--soft)}.speed .active{background:#1d1d1f;color:#fff}
-.hints{margin-top:20px;padding:12px;background:var(--soft);border-radius:10px;color:var(--muted);font-size:12px;line-height:1.6}.error{display:none;padding:13px;border-radius:10px;background:#fff0f1;color:#b4232d;margin-bottom:15px;font-size:14px;line-height:1.45}
-@media(max-width:520px){.container{padding:18px}.zh{font-size:22px}.ru{font-size:16px}.controls{grid-template-columns:1fr}}
-</style>
+@@ -21,79 +21,79 @@
 </head>
 <body>
 <div class="container">
+<div class="top"><strong>Р“Р»Р°РІР°</strong><select id="chapterSelect"></select></div>
 <div class="top"><strong>Глава</strong><select id="chapterSelect"></select></div>
 <div id="error" class="error"></div>
+<div class="nav"><button id="prev">в†ђ РїСЂРµРґ.</button><span id="counter">вЂ” / вЂ”</span><button id="nextTop">СЃР»РµРґ. в†’</button></div>
 <div class="nav"><button id="prev">← пред.</button><span id="counter">— / —</span><button id="nextTop">след. →</button></div>
 <div class="progress"><div id="progressBar"></div></div>
+<h1 id="chapterTitle">е¤§й›Ѓ В· еђ¬еЉ›и®­з»ѓ</h1><h2>РўСЂРµРЅР°Р¶С‘СЂ Р°СѓРґРёСЂРѕРІР°РЅРёСЏ</h2>
+<div id="chapterInfo" class="info"></div><div id="status" class="status">Р—Р°РіСЂСѓР·РєР°вЂ¦</div>
+<div id="zhText" class="zh">вЂ”</div><div id="ruText" class="ru"></div>
 <h1 id="chapterTitle">大雁 · 听力训练</h1><h2>Тренажёр аудирования</h2>
 <div id="chapterInfo" class="info"></div><div id="status" class="status">Загрузка…</div>
 <div id="zhText" class="zh">—</div><div id="ruText" class="ru"></div>
 <div class="controls">
+<button class="ctrl" id="pause">вЏё РџР°СѓР·Р°</button>
+<button class="ctrl primary" id="next">в–¶ Р”Р°Р»СЊС€Рµ</button>
+<button class="ctrl green" id="translate">рџ‡·рџ‡є РџРµСЂРµРІРѕРґ</button>
 <button class="ctrl" id="pause">⏸ Пауза</button>
 <button class="ctrl primary" id="next">▶ Дальше</button>
 <button class="ctrl green" id="translate">🇷🇺 Перевод</button>
 </div>
+<div class="speed"><div class="speed-title">РЎРєРѕСЂРѕСЃС‚СЊ РєРёС‚Р°Р№СЃРєРѕРіРѕ</div>
+<button data-speed="1" class="active">1.0Г—</button><button data-speed=".85">0.85Г—</button><button data-speed=".75">0.75Г—</button><button data-speed=".6">0.6Г—</button></div>
+<div class="hints">РџСЂРѕР±РµР» вЂ” РґР°Р»СЊС€Рµ В· T вЂ” РїРµСЂРµРІРѕРґ В· P/Enter вЂ” РїР°СѓР·Р°/РїСѓСЃРє В· в†ђ/в†’ вЂ” РЅР°Р·Р°Рґ/РІРїРµСЂС‘Рґ В· Р¤СЂР°Р·Р° РїРѕРІС‚РѕСЂСЏРµС‚СЃСЏ РїРѕ РєСЂСѓРіСѓ, РїРѕРєР° РЅРµ РЅР°Р¶РјС‘С‚Рµ В«Р”Р°Р»СЊС€РµВ»</div>
 <div class="speed"><div class="speed-title">Скорость китайского</div>
 <button data-speed="1" class="active">1.0×</button><button data-speed=".85">0.85×</button><button data-speed=".75">0.75×</button><button data-speed=".6">0.6×</button></div>
 <div class="hints">Пробел — дальше · T — перевод · P/Enter — пауза/пуск · ←/→ — назад/вперёд · Фраза повторяется по кругу, пока не нажмёте «Дальше»</div>
@@ -40,116 +40,90 @@ h1{font-size:25px;margin:8px 0 4px}h2{font-size:16px;font-weight:400;color:var(-
 <audio id="zhAudio" preload="auto"></audio><audio id="ruAudio" preload="auto"></audio>
 <script>
 const CHAPTERS=[
+{id:"ch3",label:"Р“Р»Р°РІР° 3",dir:"03",zh:"03.mp3",ru:"03_rus.mp3",json:"chapter.json"},
+{id:"ch10",label:"Р“Р»Р°РІР° 10",dir:"10",zh:"10.mp3",ru:"10_rus.mp3",json:"chapter.json"}
 {id:"ch3",label:"Глава 3",dir:"03",zh:"03.mp3",ru:"03_rus.mp3",json:"chapter.json"},
 {id:"ch10",label:"Глава 10",dir:"10",zh:"10.mp3",ru:"10_rus.mp3",json:"chapter.json"}
 ];
 const $=id=>document.getElementById(id),sel=$("chapterSelect"),err=$("error"),zh=$("zhAudio"),ru=$("ruAudio");
 let units=[],i=0,speed=1;
+let zhPlaying=false;    // С…РѕС‚РёРј Р»Рё РјС‹, С‡С‚РѕР±С‹ РєРёС‚Р°Р№СЃРєР°СЏ С„СЂР°Р·Р° СЃРµР№С‡Р°СЃ РїСЂРѕРёРіСЂС‹РІР°Р»Р°СЃСЊ/РїРѕРІС‚РѕСЂСЏР»Р°СЃСЊ
+let translating=false;  // СЃРµР№С‡Р°СЃ РёРґС‘С‚ РІРѕСЃРїСЂРѕРёР·РІРµРґРµРЅРёРµ РїРµСЂРµРІРѕРґР° С‚РµРєСѓС‰РµР№ С„СЂР°Р·С‹
 let zhPlaying=false;    // хотим ли мы, чтобы китайская фраза сейчас проигрывалась/повторялась
 let translating=false;  // сейчас идёт воспроизведение перевода текущей фразы
 CHAPTERS.forEach(c=>{let o=document.createElement("option");o.value=c.id;o.textContent=c.label;sel.appendChild(o)});
 const url=(c,f)=>`BOOK/${c.dir}/${f}`;
+const fmt=s=>Number.isFinite(Number(s))?`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`:"вЂ”";
 const fmt=s=>Number.isFinite(Number(s))?`${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,"0")}`:"—";
 function error(t){err.textContent=t;err.style.display="block"}
 function clearError(){err.style.display="none"}
 
 async function loadChapter(n){
+  clearError(); units=[];i=0;zhPlaying=false;translating=false; $("status").textContent="Р—Р°РіСЂСѓР¶Р°СЋ chapter.jsonвЂ¦";
   clearError(); units=[];i=0;zhPlaying=false;translating=false; $("status").textContent="Загружаю chapter.json…";
   const c=CHAPTERS[n];
   try{
     const r=await fetch(url(c,c.json),{cache:"no-cache"});
     if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json(); if(!Array.isArray(d.units)||!d.units.length)throw new Error("РЅРµС‚ units");
     const d=await r.json(); if(!Array.isArray(d.units)||!d.units.length)throw new Error("нет units");
     units=d.units; zh.src=url(c,c.zh);ru.src=url(c,c.ru);zh.playbackRate=ru.playbackRate=speed;
+    $("chapterTitle").textContent=`${c.label} В· е¤§й›Ѓ`;
+    $("chapterInfo").textContent=`${units.length} С„СЂР°Р· В· ${c.zh} + ${c.ru}`;
     $("chapterTitle").textContent=`${c.label} · 大雁`;
     $("chapterInfo").textContent=`${units.length} фраз · ${c.zh} + ${c.ru}`;
     render(true);
+  }catch(e){$("status").textContent="РћС€РёР±РєР° Р·Р°РіСЂСѓР·РєРё";error(`РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ ${url(c,c.json)}: ${e.message}`)}
   }catch(e){$("status").textContent="Ошибка загрузки";error(`Не удалось загрузить ${url(c,c.json)}: ${e.message}`)}
 }
 
+// РћС‚СЂРёСЃРѕРІР°С‚СЊ С‚РµРєСѓС‰СѓСЋ С„СЂР°Р·Сѓ Рё (РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ) СЃСЂР°Р·Сѓ Р·Р°РїСѓСЃС‚РёС‚СЊ РµС‘ РїСЂРѕРёРіСЂС‹РІР°РЅРёРµ РїРѕ РєСЂСѓРіСѓ
 // Отрисовать текущую фразу и (опционально) сразу запустить её проигрывание по кругу
 function render(autoplay){
   if(!units.length)return;const u=units[i];
   $("counter").textContent=`${i+1} / ${units.length}`;$("progressBar").style.width=`${(i+1)/units.length*100}%`;
+  $("zhText").textContent=u.zhText||"вЂ”";$("ruText").textContent=u.ruText||"вЂ”";$("ruText").style.display="none";
+  $("status").textContent=`дё­ж–‡ ${fmt(u.zhStart)}вЂ“${fmt(u.zhEnd)} В· Р СѓСЃСЃРєРёР№ ${fmt(u.ruStart)}вЂ“${fmt(u.ruEnd)}`;
   $("zhText").textContent=u.zhText||"—";$("ruText").textContent=u.ruText||"—";$("ruText").style.display="none";
   $("status").textContent=`中文 ${fmt(u.zhStart)}–${fmt(u.zhEnd)} · Русский ${fmt(u.ruStart)}–${fmt(u.ruEnd)}`;
   translating=false;ru.pause();
   zh.pause();zh.currentTime=Number(u.zhStart)||0;zh.playbackRate=speed;
+  if(autoplay){playZh()}else{zhPlaying=false;$("pause").textContent="в–¶ РџСѓСЃРє"}
   if(autoplay){playZh()}else{zhPlaying=false;$("pause").textContent="▶ Пуск"}
 }
 
+// Р—Р°РїСѓСЃС‚РёС‚СЊ (РёР»Рё РїСЂРѕРґРѕР»Р¶РёС‚СЊ) С†РёРєР»РёС‡РµСЃРєРѕРµ РїСЂРѕРёРіСЂС‹РІР°РЅРёРµ РєРёС‚Р°Р№СЃРєРѕР№ С„СЂР°Р·С‹
 // Запустить (или продолжить) циклическое проигрывание китайской фразы
 function playZh(){
   if(!units.length)return;const u=units[i];
+  zhPlaying=true;$("pause").textContent="вЏё РџР°СѓР·Р°";
   zhPlaying=true;$("pause").textContent="⏸ Пауза";
   if(zh.currentTime<Number(u.zhStart)||zh.currentTime>=Number(u.zhEnd)){zh.currentTime=Number(u.zhStart)||0}
   zh.play().catch(()=>{});
 }
+function pauseZh(){zh.pause();zhPlaying=false;$("pause").textContent="в–¶ РџСѓСЃРє"}
 function pauseZh(){zh.pause();zhPlaying=false;$("pause").textContent="▶ Пуск"}
 function togglePause(){
   if(translating){ru.pause();translating=false;pauseZh();return}
   zhPlaying?pauseZh():playZh();
 }
+function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pauseZh();$("status").textContent="Р“Р»Р°РІР° Р·Р°РєРѕРЅС‡РµРЅР°"}}
 function next(){if(!units.length)return;if(i<units.length-1){i++;render(true)}else{pauseZh();$("status").textContent="Глава закончена"}}
 function prev(){if(!units.length)return;i=Math.max(0,i-1);render(true)}
 
+// Р—Р°С†РёРєР»РёРІР°РЅРёРµ: РєР°Рє С‚РѕР»СЊРєРѕ РґРѕС…РѕРґРёРј РґРѕ РєРѕРЅС†Р° СЃРµРіРјРµРЅС‚Р° С„СЂР°Р·С‹ вЂ” РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ Рє РµРіРѕ РЅР°С‡Р°Р»Сѓ
 // Зацикливание: как только доходим до конца сегмента фразы — возвращаемся к его началу
 zh.addEventListener("timeupdate",()=>{
   if(!units.length)return;const u=units[i];
   if(zh.currentTime>=Number(u.zhEnd)){
-    if(zhPlaying&&!translating){zh.currentTime=Number(u.zhStart)||0;zh.play().catch(()=>{})}
-    else{zh.pause()}
-  }
-});
-zh.addEventListener("ended",()=>{
+@@ -105,8 +105,8 @@ <h1 id="chapterTitle">е¤§й›Ѓ В· еђ¬еЉ›и®­з»ѓ</h1><h2>Рў
   if(zhPlaying&&!translating){const u=units[i];zh.currentTime=Number(u.zhStart)||0;zh.play().catch(()=>{})}
 });
 
+// РџРµСЂРµРІРѕРґ: РїРѕРєР°Р·С‹РІР°РµС‚ С‚РµРєСЃС‚ Рё РѕРґРёРЅ СЂР°Р· РїСЂРѕРёРіСЂС‹РІР°РµС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЂСѓСЃСЃРєРёР№ СЃРµРіРјРµРЅС‚,
+// РЅР° РІСЂРµРјСЏ РїРµСЂРµРІРѕРґР° РєРёС‚Р°Р№СЃРєР°СЏ С„СЂР°Р·Р° РїСЂРёРѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ, РїРѕС‚РѕРј (РµСЃР»Рё РёРіСЂР°Р»Р°) РїСЂРѕРґРѕР»Р¶Р°РµС‚ С†РёРєР»
 // Перевод: показывает текст и один раз проигрывает соответствующий русский сегмент,
 // на время перевода китайская фраза приостанавливается, потом (если играла) продолжает цикл
 async function toggleTranslate(){
   if(!units.length)return;const box=$("ruText");
   const showing=box.style.display!=="none";
-  if(showing){
-    box.style.display="none";
-    if(translating){ru.pause();translating=false;if(zhPlaying)playZh()}
-    return;
-  }
-  box.style.display="block";const u=units[i];
-  zh.pause();translating=true;
-  ru.currentTime=Number(u.ruStart)||0;ru.playbackRate=speed;
-  try{await ru.play()}catch(e){}
-}
-function finishTranslation(){translating=false;if(zhPlaying)playZh()}
-ru.addEventListener("timeupdate",()=>{
-  if(!units.length||!translating)return;const u=units[i];
-  if(ru.currentTime>=Number(u.ruEnd)){ru.pause();finishTranslation()}
-});
-ru.addEventListener("ended",()=>{if(translating)finishTranslation()});
-
-$("pause").onclick=togglePause;
-$("next").onclick=next;$("nextTop").onclick=next;$("prev").onclick=prev;
-$("translate").onclick=toggleTranslate;
-sel.onchange=()=>loadChapter(sel.selectedIndex);
-document.querySelectorAll(".speed button").forEach(b=>b.onclick=()=>{
-  speed=Number(b.dataset.speed);
-  document.querySelectorAll(".speed button").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");zh.playbackRate=ru.playbackRate=speed;
-});
-document.addEventListener("keydown",e=>{
-  if(["INPUT","SELECT","TEXTAREA"].includes(document.activeElement.tagName))return;
-  if(e.code==="Space"){e.preventDefault();next()}
-  else if(e.key.toLowerCase()==="t")$("translate").click();
-  else if(e.key.toLowerCase()==="p"||e.key==="Enter"){e.preventDefault();togglePause()}
-  else if(e.key==="ArrowLeft")prev();
-  else if(e.key==="ArrowRight")next();
-});
-if("mediaSession"in navigator){
-  navigator.mediaSession.setActionHandler("play",playZh);
-  navigator.mediaSession.setActionHandler("pause",pauseZh);
-  navigator.mediaSession.setActionHandler("nexttrack",next);
-  navigator.mediaSession.setActionHandler("previoustrack",prev);
-}
-loadChapter(0);
-</script>
-</body></html>
