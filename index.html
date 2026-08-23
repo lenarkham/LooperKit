@@ -1,228 +1,522 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大雁 · Тренажёр аудирования</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            text-align: center;
-        }
-        .container {
-            max-width: 500px;
-            width: 90%;
-            padding: 30px;
-            border-radius: 20px;
-            background: #1e1e1e;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .header {
-            font-size: 14px;
-            color: #8e8e93;
-            margin-bottom: 20px;
-        }
-        .nav-links {
-            color: #007aff;
-            text-decoration: none;
-            margin: 0 10px;
-            font-size: 16px;
-        }
-        h1 {
-            font-size: 28px;
-            margin: 10px 0;
-        }
-        h2 {
-            font-size: 20px;
-            color: #34c759;
-            margin-bottom: 30px;
-        }
-        .loading {
-            font-size: 22px;
-            color: #eaeaea;
-            margin: 40px 0;
-        }
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        .btn {
-            background-color: #2c2c2e;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .btn:active {
-            transform: scale(0.96);
-            background-color: #3a3a3c;
-        }
-        .btn-active {
-            background-color: #007aff;
-        }
-        .speed-title {
-            font-size: 14px;
-            color: #8e8e93;
-            margin-bottom: 10px;
-        }
-        .speed-options {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 30px;
-        }
-        .speed-btn {
-            background: none;
-            border: 1px solid #3a3a3c;
-            color: #8e8e93;
-            padding: 6px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .speed-btn.active {
-            border-color: #007aff;
-            color: #007aff;
-        }
-        .hints {
-            font-size: 13px;
-            color: #8e8e93;
-            line-height: 1.6;
-            border-top: 1px solid #2c2c2e;
-            padding-top: 20px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>大雁 · Тренажёр аудирования</title>
+<style>
+  :root{
+    --bg:#0f1115;
+    --card:#171a21;
+    --accent:#4f8cff;
+    --accent2:#38c98a;
+    --text:#e8eaf0;
+    --muted:#8a92a6;
+    --border:#262b36;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    min-height:100vh;
+    padding:24px 16px 100px;
+  }
+  h1{
+    font-size:16px;
+    font-weight:500;
+    color:var(--muted);
+    margin:0 0 4px;
+    letter-spacing:.02em;
+  }
+  .progress{
+    font-size:13px;
+    color:var(--muted);
+    margin-bottom:20px;
+  }
+  .card{
+    width:100%;
+    max-width:640px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:32px 28px;
+    text-align:center;
+  }
+  .mode-label{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+    margin-bottom:14px;
+    min-height:16px;
+  }
+  .mode-label.zh{color:var(--accent);}
+  .mode-label.ru{color:var(--accent2);}
+  .sentence{
+    font-size:26px;
+    line-height:1.6;
+    font-weight:600;
+    color:var(--text);
+    margin:4px 0 22px;
+    min-height:42px;
+    word-break:break-word;
+  }
+  .sentence.ru-mode{
+    color:var(--accent2);
+    font-weight:500;
+    font-size:18px;
+  }
+  .waveform{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:4px;
+    height:48px;
+    margin-bottom:18px;
+  }
+  .bar{
+    width:4px;
+    background:var(--border);
+    border-radius:2px;
+    height:8px;
+    transition:height .12s ease, background .2s ease;
+  }
+  .bar.active{background:var(--accent);}
+  .bar.active.ru{background:var(--accent2);}
+  .status{
+    font-size:14px;
+    color:var(--muted);
+    min-height:20px;
+    margin-bottom:8px;
+  }
+  .controls{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    margin-top:28px;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:inherit;
+    font-size:15px;
+    font-weight:600;
+    border:none;
+    border-radius:12px;
+    padding:14px 22px;
+    cursor:pointer;
+    transition:transform .08s ease, opacity .2s ease;
+  }
+  button:active{transform:scale(.96);}
+  button:disabled{opacity:.35; cursor:default;}
+  .btn-primary{
+    background:var(--accent2);
+    color:#08130d;
+  }
+  .btn-secondary{
+    background:#232837;
+    color:var(--text);
+    border:1px solid var(--border);
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--muted);
+    border:1px solid var(--border);
+  }
+  .top-row{
+    display:flex;
+    width:100%;
+    max-width:640px;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+  }
+  .nav-small{
+    display:flex;
+    gap:8px;
+  }
+  .nav-small button{
+    padding:8px 12px;
+    font-size:13px;
+    font-weight:500;
+  }
+  .bar-outer{
+    width:100%;
+    max-width:640px;
+    height:4px;
+    background:var(--border);
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:24px;
+  }
+  .bar-inner{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .3s ease;
+  }
+  .hint{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:18px;
+    line-height:1.5;
+  }
+  .file-warning{
+    max-width:640px;
+    background:#3a1f1f;
+    border:1px solid #6b2f2f;
+    color:#ffb4b4;
+    padding:12px 16px;
+    border-radius:10px;
+    font-size:13px;
+    margin-bottom:20px;
+    display:none;
+  }
+  select{
+    background:#232837;
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:8px;
+    padding:6px 10px;
+    font-size:13px;
+  }
+  .setting-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    justify-content:center;
+    margin-top:10px;
+    font-size:13px;
+    color:var(--muted);
+  }
+  .tabs{
+    display:flex;
+    gap:8px;
+    width:100%;
+    max-width:640px;
+    margin-bottom:16px;
+    flex-wrap:wrap;
+  }
+  .tab-btn{
+    background:#1a1e27;
+    color:var(--muted);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:9px 16px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--accent);
+    color:#0a1020;
+    border-color:var(--accent);
+  }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <strong>Глава</strong><br><br>
-        <a href="#" class="nav-links">← пред.</a> — / — <a href="#" class="nav-links">след. →</a>
-    </div>
+<div class="top-row">
+  <h1>大雁 · 听力训练</h1>
+  <div class="nav-small">
+    <button class="btn-ghost" id="prevBtn" title="Предыдущее предложение">← пред.</button>
+  </div>
+</div>
+<div class="tabs" id="tabs"></div>
+<div class="progress" id="progressLabel">Предложение 1 / 41</div>
+<div class="bar-outer"><div class="bar-inner" id="barInner"></div></div>
 
-    <h1>大雁 · 听力训练</h1>
-    <h2>Тренажёр аудирования</h2>
-
-    <div class="loading" id="status-display">Загрузка…</div>
-
-    <div class="controls">
-        <button class="btn" onclick="togglePause()">⏸ Пауза</button>
-        <button class="btn" onclick="replayTrack()">🔁 Повторить</button>
-        <button class="btn" onclick="getTranslation()">🇷🇺 Показать перевод</button>
-        <button class="btn btn-active" onclick="goNext()">✅ Понял — дальше</button>
-    </div>
-
-    <div class="speed-title">Скорость китайского</div>
-    <div class="speed-options">
-        <button class="speed-btn active" onclick="setSpeed(1.0)">1.0×</button>
-        <button class="speed-btn" onclick="setSpeed(0.85)">0.85×</button>
-        <button class="speed-btn" onclick="setSpeed(0.75)">0.75×</button>
-        <button class="speed-btn" onclick="setSpeed(0.6)">0.6×</button>
-    </div>
-
-    <div class="hints">
-        Пробел — дальше · T — перевод · P/Enter — пауза/пуск · ←/→ — назад/вперёд<br>
-        Фраза повторяется по кругу, пока не нажмёте «Дальше»
-    </div>
+<div class="file-warning" id="fileWarning">
+  Не удаётся загрузить аудиофайлы (02.mp3 / 02_rus.mp3). Убедитесь, что index.html лежит
+  в одной папке с этими двумя файлами, и откройте страницу через локальный сервер
+  (например, двойным щелчком, либо через Live Server), если браузер блокирует локальные файлы.
 </div>
 
-<audio id="main-audio" loop></audio>
+<div class="card">
+  <div class="mode-label zh" id="modeLabel">中文 · слушаем предложение</div>
+  <div class="sentence" id="sentenceText"></div>
+  <div class="waveform" id="waveform"></div>
+  <div class="status" id="statusLine">Играет по кругу — жмите «Понял», когда разберёте фразу</div>
+
+  <div class="controls">
+    <button class="btn-secondary" id="pauseBtn">⏸ Пауза</button>
+    <button class="btn-secondary" id="replayBtn">🔁 Повторить</button>
+    <button class="btn-secondary" id="translateBtn">🇷🇺 Не понял — перевод</button>
+    <button class="btn-primary" id="nextBtn">✅ Понял — дальше</button>
+  </div>
+
+  <div class="setting-row">
+    <label for="speedSelect">Скорость китайского:</label>
+    <select id="speedSelect">
+      <option value="1">1.0×</option>
+      <option value="0.85">0.85×</option>
+      <option value="0.75">0.75×</option>
+      <option value="0.6">0.6×</option>
+    </select>
+  </div>
+
+  <div class="hint">
+    Пробел — «Понял / дальше». T — перевод. P или Enter — пауза/пуск. ← / → — назад/вперёд по фразам.
+  </div>
+</div>
+
+<audio id="zhAudio" preload="auto"></audio>
+<audio id="ruAudio" preload="auto"></audio>
 
 <script>
-    const audio = document.getElementById('main-audio');
-    const playlist = ['test.mp3', 'A.mp3', 'B.mp3', 'C.mp3'];
-    let currentTrackIndex = -1;
+const CH2_UNITS = [{"id": 1, "zhStart": 6.5, "zhEnd": 7.62, "zhText": "二。", "ruStart": null, "ruEnd": null}, {"id": 2, "zhStart": 8.8, "zhEnd": 15.3, "zhText": "最会打雁的人和最好的头雁。", "ruStart": 0.15, "ruEnd": 3.74}, {"id": 3, "zhStart": 17.26, "zhEnd": 32.8, "zhText": "那时候，我爷爷是远近有名的打雁人，他有一支老枪。这支枪已经跟了他四十年了。", "ruStart": 4.24, "ruEnd": 12.92}, {"id": 4, "zhStart": 34.4, "zhEnd": 40.42, "zhText": "我爷爷打雁，和有的打雁人不一样。", "ruStart": 13.58, "ruEnd": 17.21}, {"id": 5, "zhStart": 41.3, "zhEnd": 52.72, "zhText": "有的人，远远地看见大雁，就很快地往前跑，还把枪拿得很高。", "ruStart": 18.18, "ruEnd": 24.121}, {"id": 6, "zhStart": 53.8, "zhEnd": 65.38, "zhText": "没等他们跑近，更没等他们开枪，哨雁早已经看见他们，看见枪了。", "ruStart": 24.5, "ruEnd": 30.88}, {"id": 7, "zhStart": 64.998, "zhEnd": 73.178, "zhText": "所以，有的人打不到雁，有的人打到的雁比较少。", "ruStart": 31.34, "ruEnd": 37.32}, {"id": 8, "zhStart": 75.26, "zhEnd": 78.06, "zhText": "我爷爷不这样。", "ruStart": 38.04, "ruEnd": 39.64}, {"id": 9, "zhStart": 78.46, "zhEnd": 84.12, "zhText": "我爷爷看见大雁，一点都不紧张。", "ruStart": 39.8, "ruEnd": 42.66}, {"id": 10, "zhStart": 84.86, "zhEnd": 90.26, "zhText": "他先拿一个大包，把枪包起来。", "ruStart": 43.28, "ruEnd": 48.82}, {"id": 11, "zhStart": 91.1, "zhEnd": 104.44, "zhText": "哨雁不知道大包里有枪。爷爷的眼睛看着别的地方，就好像没有看着大雁。", "ruStart": 43.28, "ruEnd": 53.38}, {"id": 12, "zhStart": 105.5, "zhEnd": 113.36, "zhText": "他很慢地走，往前走，再很慢地拿枪……", "ruStart": 53.86, "ruEnd": 58.06}, {"id": 13, "zhStart": 115.26, "zhEnd": 126.38, "zhText": "我爷爷每次打雁，只放一枪。我爷爷的枪是村子里最好的枪，", "ruStart": 58.58, "ruEnd": 64.62}, {"id": 14, "zhStart": 127.32, "zhEnd": 132.5, "zhText": "这支枪一次可以打一发大子弹，", "ruStart": 65.14, "ruEnd": 68.3}, {"id": 15, "zhStart": 133.5, "zhEnd": 139.34, "zhText": "这发大子弹里有很多很多小子弹，", "ruStart": 68.82, "ruEnd": 71.76}, {"id": 16, "zhStart": 140.2, "zhEnd": 154.4, "zhText": "大子弹从枪里打出去，小子弹也就飞出来了，能往前面和左右飞很远。", "ruStart": 72.24, "ruEnd": 78.38}, {"id": 17, "zhStart": 155.16, "zhEnd": 162.28, "zhText": "所以，我爷爷一枪就能打到七八只雁，", "ruStart": 78.88, "ruEnd": 85.12}, {"id": 18, "zhStart": 163.5, "zhEnd": 167.44, "zhText": "最多的一次打了十一只呢！", "ruStart": 78.88, "ruEnd": 85.12}, {"id": 19, "zhStart": 168.16, "zhEnd": 183.98, "zhText": "爷爷的枪打得好极了也快极了，常常是爷爷已经打出了子弹，哨雁才知道他是来打雁的，", "ruStart": 85.8, "ruEnd": 96.52}, {"id": 20, "zhStart": 184.96, "zhEnd": 193.56, "zhText": "刚打算叫大家快一点儿飞走，可是已经太晚了。", "ruStart": 97.0, "ruEnd": 102.561}, {"id": 21, "zhStart": 194.56, "zhEnd": 212.06, "zhText": "所以，每年一到了十月，天气开始冷了，大雁从北边过来的时候，我爷爷一天就能打到不少雁。", "ruStart": 102.84, "ruEnd": 111.16}, {"id": 22, "zhStart": 213.78, "zhEnd": 244.42, "zhText": "我爷爷打了雁，就坐上公共汽车，把打死的雁拿到很远的城市里卖。对我们这个家家都没有多少钱，家家房子都很旧的小村子来说，这些大雁能卖不少钱。", "ruStart": 111.62, "ruEnd": 125.88}, {"id": 23, "zhStart": 245.94, "zhEnd": 268.68, "zhText": "爷爷把卖雁的钱放进银行，等到我和哥哥姐姐的学校跟学生家里要钱的时候，爷爷就让我和哥哥姐姐把这些钱给学校。", "ruStart": 126.33, "ruEnd": 137.94}, {"id": 24, "zhStart": 270.1, "zhEnd": 296.2, "zhText": "一些学生家里打不到雁，家里的钱就不够给学校……有时候，爷爷卖完大雁，看着手里的钱一高兴，会给我带回一点儿水果和别的吃的东西。", "ruStart": 138.38, "ruEnd": 151.38}, {"id": 25, "zhStart": 296.54, "zhEnd": 310.56, "zhText": "虽然只有一点儿，但是这些很少能吃到的东西会让我这个村子里的孩子高兴好长时间。", "ruStart": 151.83, "ruEnd": 159.38}, {"id": 26, "zhStart": 312.06, "zhEnd": 320.38, "zhText": "有一次，爷爷还用两块五毛钱给我买了一个旧足球呢！", "ruStart": 159.96, "ruEnd": 165.0}, {"id": 27, "zhStart": 321.56, "zhEnd": 327.96, "zhText": "我真想告诉爷爷，我更想要的是一个篮球。", "ruStart": 165.16, "ruEnd": 169.96}, {"id": 28, "zhStart": 329.22, "zhEnd": 335.9, "zhText": "我知道，在我们家，爷爷最喜欢的人就是我。", "ruStart": 170.48, "ruEnd": 175.3}, {"id": 29, "zhStart": 336.7, "zhEnd": 341.8, "zhText": "只要我说要，爷爷一定给我买。", "ruStart": 170.48, "ruEnd": 177.14}, {"id": 30, "zhStart": 342.66, "zhEnd": 374.1, "zhText": "可是我没说。我从小就懂，我们家里人多，钱少，我和哥哥姐姐还要上学。有时候，大雁卖得特别好，爷爷一高兴，也会拿出一两块钱，给自己买点儿不贵的酒喝，", "ruStart": 177.59, "ruEnd": 195.36}, {"id": 31, "zhStart": 375.26, "zhEnd": 380.56, "zhText": "爷爷一喝酒，脸就红红的。", "ruStart": 195.82, "ruEnd": 199.16}, {"id": 32, "zhStart": 381.1, "zhEnd": 406.24, "zhText": "所以，每年冬天快要来的时候，村子里的人只要看见爷爷带着他的枪往村子的西边走，就会半开玩笑地说：“好啊，明天又有钱买酒喝了！”", "ruStart": 199.66, "ruEnd": 213.38}, {"id": 33, "zhStart": 407.38, "zhEnd": 415.94, "zhText": "我八岁那年，爷爷就让我跟着他，去学习打雁。", "ruStart": 213.82, "ruEnd": 219.26}, {"id": 34, "zhStart": 417.4, "zhEnd": 425.96, "zhText": "我真是高兴极了，真希望有一天能有一支自己的枪。", "ruStart": 219.76, "ruEnd": 225.08}, {"id": 35, "zhStart": 427.3, "zhEnd": 445.1, "zhText": "可是，在我十二岁那年，出了一件事。那年，从北边来的雁队里，有了一只新的头雁。", "ruStart": 225.56, "ruEnd": 234.36}, {"id": 36, "zhStart": 446.0, "zhEnd": 473.9, "zhText": "它又高大，又漂亮，脖子很长，羽毛非常干净，大雁都很听它的话。爷爷第一次看见它，就对我说：“孩子，看见那只头雁了吗？”", "ruStart": 234.84, "ruEnd": 247.54}, {"id": 37, "zhStart": 474.48, "zhEnd": 484.78, "zhText": "它今年第一次做头雁，那是只多好的大雁啊！", "ruStart": 248.1, "ruEnd": 253.08}, {"id": 38, "zhStart": 485.56, "zhEnd": 492.82, "zhText": "它的翅膀那么大，飞得一定很快；", "ruStart": 253.22, "ruEnd": 257.12}, {"id": 39, "zhStart": 494.12, "zhEnd": 505.06, "zhText": "它的脖子那么长，眼睛也很好，一定可以看很远。", "ruStart": 257.57, "ruEnd": 264.1}, {"id": 40, "zhStart": 505.76, "zhEnd": 512.66, "zhText": "它差不多是我看见过的最好的大雁！", "ruStart": 264.64, "ruEnd": 268.4}, {"id": 41, "zhStart": 513.46, "zhEnd": 527.22, "zhText": "不知道为什么，我觉得爷爷说这些话的时候，好像有点紧张……", "ruStart": 269.02, "ruEnd": 275.34}];
 
-    function loadTrack(index, play = true) {
-        currentTrackIndex = index;
-        audio.src = playlist[currentTrackIndex];
-        document.getElementById('status-display').innerText = "Играет файл: " + playlist[currentTrackIndex];
+const CH3_UNITS = [{"id": 1, "zhStart": 6.49, "zhEnd": 10.46, "zhText": "三、两个死对头。", "ruStart": 1.95, "ruEnd": 3.47}, {"id": 2, "zhStart": 11.53, "zhEnd": 14.94, "zhText": "过了不长时间", "ruStart": 4.85, "ruEnd": 6.15}, {"id": 3, "zhStart": 15.52, "zhEnd": 23.25, "zhText": "我就知道我那打雁远近有名的爷爷", "ruStart": 7.31, "ruEnd": 12.49}, {"id": 4, "zhStart": 23.67, "zhEnd": 32.99, "zhText": "为什么在看见这只头雁以后有点儿紧张了。", "ruStart": 13.89, "ruEnd": 18.53}, {"id": 5, "zhStart": 33.27, "zhEnd": 40.51, "zhText": "这天晚上十一点多,天黑极了,", "ruStart": 19.79, "ruEnd": 23.79}, {"id": 6, "zhStart": 40.77, "zhEnd": 45.3, "zhText": "应该是大雁睡觉的时候了。", "ruStart": 25.07, "ruEnd": 28.13}, {"id": 7, "zhStart": 46.51, "zhEnd": 57.6, "zhText": "我和爷爷像以前一样,把枪包在一个很旧的大包里,", "ruStart": 29.33, "ruEnd": 34.19}, {"id": 8, "zhStart": 58.45, "zhEnd": 60.42, "zhText": "慢慢地往……", "ruStart": 35.78, "ruEnd": 37.14}, {"id": 9, "zhStart": 60.79, "zhEnd": 63.92, "zhText": "村子西边的湿地走。", "ruStart": 38.56, "ruEnd": 40.9}, {"id": 10, "zhStart": 65.69, "zhEnd": 78.0, "zhText": "前面已经可以看见那些把头放在翅膀下睡觉的大雁了。", "ruStart": 42.22, "ruEnd": 47.66}, {"id": 11, "zhStart": 78.72, "zhEnd": 82.12, "zhText": "大雁真多啊!", "ruStart": 49.38, "ruEnd": 51.18}, {"id": 12, "zhStart": 82.97, "zhEnd": 89.8, "zhText": "爷爷高兴起来,找到一个合适的地方。", "ruStart": 52.94, "ruEnd": 55.74}, {"id": 13, "zhStart": 91.29, "zhEnd": 98.52, "zhText": "慢慢地去包里拿那只黑黑的老枪。", "ruStart": 57.36, "ruEnd": 60.44}, {"id": 14, "zhStart": 100.29, "zhEnd": 107.42, "zhText": "我知道,过一会儿,那只枪就会笑起来。", "ruStart": 62.04, "ruEnd": 65.66}, {"id": 15, "zhStart": 108.8, "zhEnd": 115.32, "zhText": "枪一笑,很多大雁就要死了。", "ruStart": 67.16, "ruEnd": 71.26}, {"id": 16, "zhStart": 117.36, "zhEnd": 119.9, "zhText": "可是没想到,", "ruStart": 73.08, "ruEnd": 74.16}, {"id": 17, "zhStart": 120.33, "zhEnd": 129.34, "zhText": "爷爷刚拿出枪,那只头雁就一下大叫起来。", "ruStart": 74.74, "ruEnd": 80.02}, {"id": 18, "zhStart": 130.94, "zhEnd": 138.7, "zhText": "我这才知道,除了少雁,头雁也没有睡觉。", "ruStart": 81.68, "ruEnd": 85.62}, {"id": 19, "zhStart": 139.22, "zhEnd": 143.87, "zhText": "它站在一个很高的地方,", "ruStart": 87.34, "ruEnd": 89.2}, {"id": 20, "zhStart": 143.9, "zhEnd": 148.68, "zhText": "很容易看见爷爷做的事。", "ruStart": 90.78, "ruEnd": 93.94}, {"id": 21, "zhStart": 150.72, "zhEnd": 159.96, "zhText": "大雁飞得太快了,一下就离我们很远了。", "ruStart": 95.74, "ruEnd": 99.64}, {"id": 22, "zhStart": 161.16, "zhEnd": 165.1, "zhText": "爷爷没办法打到雁。", "ruStart": 101.08, "ruEnd": 103.16}, {"id": 23, "zhStart": 167.27, "zhEnd": 171.3, "zhText": "到明天,你看着吧。", "ruStart": 104.88, "ruEnd": 106.68}, {"id": 24, "zhStart": 172.61, "zhEnd": 179.62, "zhText": "爷爷对那只因为飞得高,离得远,", "ruStart": 108.52, "ruEnd": 112.96}, {"id": 25, "zhStart": 179.94, "zhEnd": 186.61, "zhText": "所以看起来已经很小的头雁说,", "ruStart": 114.72, "ruEnd": 118.36}, {"id": 26, "zhStart": 187.79, "zhEnd": 194.49, "zhText": "然后很不高兴地带着我回了家。", "ruStart": 120.16, "ruEnd": 122.52}, {"id": 27, "zhStart": 196.85, "zhEnd": 198.34, "zhText": "四十年来,", "ruStart": 124.21, "ruEnd": 125.17}, {"id": 28, "zhStart": 199.03, "zhEnd": 205.22, "zhText": "这是爷爷的老枪第一次没有笑出来。", "ruStart": 126.71, "ruEnd": 130.61}, {"id": 29, "zhStart": 206.39, "zhEnd": 211.69, "zhText": "爷爷第一次没有打到雁", "ruStart": 132.33, "ruEnd": 134.21}, {"id": 30, "zhStart": 214.0, "zhEnd": 219.46, "zhText": "第二天,爷爷换了个办法。", "ruStart": 135.65, "ruEnd": 137.91}, {"id": 31, "zhStart": 240.62, "zhEnd": 243.14, "zhText": "就在那个旧包里。", "ruStart": 139.56, "ruEnd": 141.26}, {"id": 32, "zhStart": 244.67, "zhEnd": 249.12, "zhText": "晚上,看看时间不早了。", "ruStart": 142.88, "ruEnd": 146.06}, {"id": 33, "zhStart": 250.17, "zhEnd": 256.74, "zhText": "爷爷叫上我,一起慢慢走进湿地。", "ruStart": 147.52, "ruEnd": 151.78}, {"id": 34, "zhStart": 259.75, "zhEnd": 263.86, "zhText": "头雁还是没有睡觉,", "ruStart": 153.62, "ruEnd": 155.38}, {"id": 35, "zhStart": 265.26, "zhEnd": 270.08, "zhText": "还是站在那个很高的地方。", "ruStart": 157.0, "ruEnd": 159.28}, {"id": 36, "zhStart": 271.44, "zhEnd": 276.66, "zhText": "眼睛往东看看,往西看看,", "ruStart": 160.85, "ruEnd": 164.11}, {"id": 37, "zhStart": 277.93, "zhEnd": 282.39, "zhText": "往南看看,往北看看。", "ruStart": 165.77, "ruEnd": 168.21}, {"id": 38, "zhStart": 283.55, "zhEnd": 289.86, "zhText": "我想,他可能就是在等着我们。", "ruStart": 169.91, "ruEnd": 173.19}, {"id": 39, "zhStart": 291.42, "zhEnd": 297.23, "zhText": "爷爷不去看他,慢慢地站下,", "ruStart": 174.85, "ruEnd": 178.13}, {"id": 40, "zhStart": 298.06, "zhEnd": 300.12, "zhText": "放好自行车。", "ruStart": 179.67, "ruEnd": 180.87}, {"id": 41, "zhStart": 301.12, "zhEnd": 304.41, "zhText": "接着,慢慢地坐下。", "ruStart": 182.63, "ruEnd": 183.95}, {"id": 42, "zhStart": 305.59, "zhEnd": 310.59, "zhText": "然后,慢慢地拿那个旧包。", "ruStart": 185.69, "ruEnd": 187.77}, {"id": 43, "zhStart": 312.31, "zhEnd": 315.75, "zhText": "看见爷爷拿旧包,", "ruStart": 188.32, "ruEnd": 191.94}, {"id": 44, "zhStart": 316.55, "zhEnd": 320.84, "zhText": "头雁的眼睛好像更大了,", "ruStart": 192.52, "ruEnd": 196.22}, {"id": 45, "zhStart": 321.72, "zhEnd": 325.26, "zhText": "翅膀也像要飞一样。", "ruStart": 196.96, "ruEnd": 200.4}, {"id": 46, "zhStart": 326.16, "zhEnd": 329.83, "zhText": "可是,爷爷拿出一瓶水,", "ruStart": 202.07, "ruEnd": 204.09}, {"id": 47, "zhStart": 329.86, "zhEnd": 332.2, "zhText": "慢慢地坐下。 慢慢喝起来。", "ruStart": 205.87, "ruEnd": 208.67}, {"id": 48, "zhStart": 333.02, "zhEnd": 336.62, "zhText": "头雁一看,放下了翅膀。", "ruStart": 210.39, "ruEnd": 213.65}, {"id": 49, "zhStart": 338.14, "zhEnd": 344.04, "zhText": "就在这时候,爷爷飞一样地拿出了枪。", "ruStart": 215.39, "ruEnd": 218.39}, {"id": 50, "zhStart": 345.6, "zhEnd": 351.2, "zhText": "还是晚了,头雁没有给爷爷机会。", "ruStart": 219.79, "ruEnd": 223.61}, {"id": 51, "zhStart": 352.27, "zhEnd": 355.68, "zhText": "就在爷爷刚去拿枪的时候,", "ruStart": 225.43, "ruEnd": 228.29}, {"id": 52, "zhStart": 356.95, "zhEnd": 360.32, "zhText": "头雁已经大叫起来。", "ruStart": 230.05, "ruEnd": 232.11}, {"id": 53, "zhStart": 362.27, "zhEnd": 368.18, "zhText": "这只头雁真是我的死对头,", "ruStart": 233.85, "ruEnd": 236.55}, {"id": 54, "zhStart": 368.82, "zhEnd": 372.84, "zhText": "我一定要打到它。", "ruStart": 238.39, "ruEnd": 240.45}, {"id": 55, "zhStart": 374.08, "zhEnd": 378.73, "zhText": "爷爷收拾着那个旧包,", "ruStart": 242.15, "ruEnd": 244.49}, {"id": 56, "zhStart": 378.99, "zhEnd": 380.99, "zhText": "特别不高兴地说。", "ruStart": 246.35, "ruEnd": 247.83}];
 
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: playlist[currentTrackIndex],
-                artist: 'Тренажёр аудирования'
-            });
-        }
+const CH10_UNITS = [{"id": 1, "zhStart": 7.4, "zhEnd": 12.16, "zhText": "头雁又飞起来了。", "ruStart": 1.81, "ruEnd": 3.63}, {"id": 2, "zhStart": 13.4, "zhEnd": 17.47, "zhText": "时间过得飞一样快。", "ruStart": 4.54, "ruEnd": 7.19}, {"id": 3, "zhStart": 17.71, "zhEnd": 22.94, "zhText": "春天来了，天气暖和了。", "ruStart": 8.03, "ruEnd": 10.21}, {"id": 4, "zhStart": 23.5, "zhEnd": 28.4, "zhText": "大雁又开始往北边飞去。", "ruStart": 11.17, "ruEnd": 13.41}, {"id": 5, "zhStart": 29.58, "zhEnd": 38.0, "zhText": "头雁小白常常看着天上飞过的雁队想事儿。", "ruStart": 14.2, "ruEnd": 19.09}, {"id": 6, "zhStart": 38.4, "zhEnd": 43.0, "zhText": "黑黑的眼睛很大很大。", "ruStart": 20.12, "ruEnd": 22.56}, {"id": 7, "zhStart": 44.05, "zhEnd": 50.0, "zhText": "我知道，小白、小黄是大雁。", "ruStart": 23.48, "ruEnd": 26.42}, {"id": 8, "zhStart": 50.8, "zhEnd": 55.22, "zhText": "大雁应该在天上飞。", "ruStart": 27.34, "ruEnd": 29.1}, {"id": 9, "zhStart": 56.4, "zhEnd": 59.0, "zhText": "特别是小白，", "ruStart": 30.26, "ruEnd": 31.46}, {"id": 10, "zhStart": 59.5, "zhEnd": 65.0, "zhText": "它是头雁，是只最好的头雁。", "ruStart": 32.54, "ruEnd": 35.3}, {"id": 11, "zhStart": 65.65, "zhEnd": 69.0, "zhText": "它怎么能不想飞呢？", "ruStart": 36.48, "ruEnd": 38.38}, {"id": 12, "zhStart": 69.33, "zhEnd": 74.21, "zhText": "所以，我打算帮小白飞起来。", "ruStart": 39.62, "ruEnd": 42.53}, {"id": 13, "zhStart": 74.79, "zhEnd": 82.41, "zhText": "小白的翅膀伤得很重，羽毛掉了很多。", "ruStart": 43.66, "ruEnd": 47.37}, {"id": 14, "zhStart": 82.89, "zhEnd": 90.0, "zhText": "现在刚刚开始长出很短的新羽毛。", "ruStart": 48.81, "ruEnd": 52.17}, {"id": 15, "zhStart": 90.75, "zhEnd": 95.0, "zhText": "为让小白早一点儿飞起来，", "ruStart": 53.41, "ruEnd": 56.21}, {"id": 16, "zhStart": 96.0, "zhEnd": 102.16, "zhText": "我先让它站在一张桌子上往下飞。", "ruStart": 57.61, "ruEnd": 60.57}, {"id": 17, "zhStart": 103.65, "zhEnd": 109.13, "zhText": "哪知道，因为翅膀坏了，运动得少，", "ruStart": 61.93, "ruEnd": 66.35}, {"id": 18, "zhStart": 109.8, "zhEnd": 114.0, "zhText": "小白一飞就掉下来。", "ruStart": 67.66, "ruEnd": 70.94}, {"id": 19, "zhStart": 114.85, "zhEnd": 120.29, "zhText": "可是它一点儿都不怕疼，不怕难。", "ruStart": 72.3, "ruEnd": 75.36}, {"id": 20, "zhStart": 121.7, "zhEnd": 129.0, "zhText": "我把它放到那张桌子上，想让它休息一会儿，", "ruStart": 76.42, "ruEnd": 79.86}, {"id": 21, "zhStart": 129.6, "zhEnd": 133.31, "zhText": "可它马上又往下飞！", "ruStart": 81.19, "ruEnd": 83.4}, {"id": 22, "zhStart": 134.95, "zhEnd": 137.0, "zhText": "飞了一个多月，", "ruStart": 84.89, "ruEnd": 86.42}, {"id": 23, "zhStart": 137.8, "zhEnd": 140.15, "zhText": "不知道多少次，", "ruStart": 87.79, "ruEnd": 89.14}, {"id": 24, "zhStart": 141.21, "zhEnd": 144.0, "zhText": "小白飞好了。", "ruStart": 90.57, "ruEnd": 92.57}, {"id": 25, "zhStart": 145.05, "zhEnd": 151.31, "zhText": "我又让它站在我家的房子上往下飞。", "ruStart": 93.97, "ruEnd": 97.66}, {"id": 26, "zhStart": 152.6, "zhEnd": 155.0, "zhText": "飞了两个多月，", "ruStart": 99.17, "ruEnd": 101.03}, {"id": 27, "zhStart": 155.9, "zhEnd": 159.0, "zhText": "小白又飞好了。", "ruStart": 102.41, "ruEnd": 104.38}, {"id": 28, "zhStart": 160.15, "zhEnd": 163.0, "zhText": "不久，夏天到了，", "ruStart": 105.75, "ruEnd": 107.08}, {"id": 29, "zhStart": 163.5, "zhEnd": 166.57, "zhText": "几门课都考试完了。", "ruStart": 108.66, "ruEnd": 111.14}, {"id": 30, "zhStart": 167.7, "zhEnd": 169.0, "zhText": "放暑假后，", "ruStart": 112.28, "ruEnd": 113.94}, {"id": 31, "zhStart": 169.6, "zhEnd": 173.69, "zhText": "学校没有老师和同学，", "ruStart": 115.07, "ruEnd": 117.66}, {"id": 32, "zhStart": 174.45, "zhEnd": 181.52, "zhText": "我就让小白站在学校的小楼上往下飞……", "ruStart": 119.07, "ruEnd": 123.02}, {"id": 33, "zhStart": 182.93, "zhEnd": 185.39, "zhText": "虽然天气很热，", "ruStart": 124.36, "ruEnd": 126.23}, {"id": 34, "zhStart": 186.1, "zhEnd": 190.14, "zhText": "但是小白一点儿都不怕。", "ruStart": 127.61, "ruEnd": 129.55}, {"id": 35, "zhStart": 191.8, "zhEnd": 194.0, "zhText": "一天一天，", "ruStart": 130.89, "ruEnd": 131.67}, {"id": 36, "zhStart": 194.4, "zhEnd": 200.17, "zhText": "小白的翅膀已经长出了长长的羽毛，", "ruStart": 133.04, "ruEnd": 135.75}, {"id": 37, "zhStart": 201.05, "zhEnd": 206.07, "zhText": "现在，它已经飞得很好了。", "ruStart": 137.18, "ruEnd": 139.13}, {"id": 38, "zhStart": 207.91, "zhEnd": 213.19, "zhText": "从小白能飞高飞远开始，", "ruStart": 140.51, "ruEnd": 143.87}, {"id": 39, "zhStart": 214.01, "zhEnd": 229.0, "zhText": "每天早上，小白都和小黄一起，飞到村子西边的湿地里或者北边的大山里去。", "ruStart": 145.17, "ruEnd": 151.41}, {"id": 40, "zhStart": 230.16, "zhEnd": 233.0, "zhText": "虽然飞得很远，", "ruStart": 152.44, "ruEnd": 154.28}, {"id": 41, "zhStart": 233.77, "zhEnd": 243.0, "zhText": "但是只要我站在房子上大叫：“小白———，小黄———”", "ruStart": 155.58, "ruEnd": 161.42}, {"id": 42, "zhStart": 244.2, "zhEnd": 251.0, "zhText": "小白、小黄就一定马上飞回来。", "ruStart": 161.74, "ruEnd": 165.06}, {"id": 43, "zhStart": 251.85, "zhEnd": 256.3, "zhText": "这两只大雁知道我在叫谁。", "ruStart": 166.4, "ruEnd": 168.8}, {"id": 44, "zhStart": 257.95, "zhEnd": 264.0, "zhText": "又到十月了，天气开始冷了，", "ruStart": 169.9, "ruEnd": 173.12}, {"id": 45, "zhStart": 264.75, "zhEnd": 267.0, "zhText": "我有点儿紧张，", "ruStart": 174.46, "ruEnd": 175.74}, {"id": 46, "zhStart": 267.8, "zhEnd": 271.41, "zhText": "我也说不出我紧张什么。", "ruStart": 177.03, "ruEnd": 180.16}, {"id": 47, "zhStart": 271.57, "zhEnd": 279.0, "zhText": "我真的想让小白、小黄回到雁队里去，", "ruStart": 181.46, "ruEnd": 185.74}, {"id": 48, "zhStart": 279.6, "zhEnd": 285.0, "zhText": "回到天上，像以前一样，", "ruStart": 187.07, "ruEnd": 188.96}, {"id": 49, "zhStart": 285.8, "zhEnd": 291.0, "zhText": "每年都到远远的地方去旅行，", "ruStart": 190.43, "ruEnd": 193.9}, {"id": 50, "zhStart": 291.65, "zhEnd": 297.0, "zhText": "飞过世界上很多城市、村子，", "ruStart": 195.11, "ruEnd": 198.26}, {"id": 51, "zhStart": 297.65, "zhEnd": 302.11, "zhText": "看很多机场和大飞机、大火车，", "ruStart": 199.63, "ruEnd": 203.86}, {"id": 52, "zhStart": 302.35, "zhEnd": 308.71, "zhText": "还有很多我没有见过的新东西。", "ruStart": 205.42, "ruEnd": 208.26}, {"id": 53, "zhStart": 309.95, "zhEnd": 313.0, "zhText": "可是，我又非常怕，", "ruStart": 209.68, "ruEnd": 211.38}, {"id": 54, "zhStart": 313.65, "zhEnd": 321.0, "zhText": "怕以后再也不能和小白、小黄见面……", "ruStart": 212.83, "ruEnd": 217.41}, {"id": 55, "zhStart": 321.7, "zhEnd": 323.0, "zhText": "那几天，", "ruStart": 218.94, "ruEnd": 219.55}, {"id": 56, "zhStart": 323.55, "zhEnd": 330.0, "zhText": "一看见天上飞着“一”字队、“人”字队的大雁，", "ruStart": 220.83, "ruEnd": 224.79}, {"id": 57, "zhStart": 330.93, "zhEnd": 333.56, "zhText": "一听到大雁叫，", "ruStart": 226.23, "ruEnd": 227.97}, {"id": 58, "zhStart": 334.2, "zhEnd": 336.46, "zhText": "我就紧张……", "ruStart": 229.49, "ruEnd": 231.19}, {"id": 59, "zhStart": 337.87, "zhEnd": 346.5, "zhText": "有一天，一队大雁飞到了村子西边的湿地休息，", "ruStart": 232.61, "ruEnd": 237.27}, {"id": 60, "zhStart": 346.53, "zhEnd": 352.28, "zhText": "爷爷把我叫过来，慢慢地说：", "ruStart": 238.48, "ruEnd": 240.79}, {"id": 61, "zhStart": 353.57, "zhEnd": 363.77, "zhText": "“孩子，是让小白、小黄回到雁队的时候了。”", "ruStart": 242.39, "ruEnd": 247.71}, {"id": 62, "zhStart": 365.05, "zhEnd": 370.15, "zhText": "我知道，我最怕的事来了。", "ruStart": 248.42, "ruEnd": 252.31}, {"id": 63, "zhStart": 371.1, "zhEnd": 375.33, "zhText": "我的眼睛里一下有了泪，", "ruStart": 253.98, "ruEnd": 256.13}, {"id": 64, "zhStart": 376.01, "zhEnd": 377.98, "zhText": "很多的泪。", "ruStart": 257.76, "ruEnd": 258.91}];
 
-        if (play) {
-            audio.play().catch(err => console.log(err));
-        }
-    }
+const CH4_UNITS = [{"id": 1, "zhStart": 8.15, "zhEnd": 16.0, "zhText": "四. 爷爷想出了一个很黑的办法。", "ruStart": 1.09, "ruEnd": 6.65}, {"id": 2, "zhStart": 16.75, "zhEnd": 21.0, "zhText": "已经是第三天了。", "ruStart": 8.11, "ruEnd": 9.31}, {"id": 3, "zhStart": 21.75, "zhEnd": 28.0, "zhText": "我知道,如果今天晚上再打不到雁,", "ruStart": 10.71, "ruEnd": 14.59}, {"id": 4, "zhStart": 28.85, "zhEnd": 35.0, "zhText": "大雁就要飞往暖和的地方过冬天去了。", "ruStart": 16.35, "ruEnd": 18.75}, {"id": 5, "zhStart": 35.9, "zhEnd": 42.0, "zhText": "我问爷爷, \"还有办法吗?\"", "ruStart": 20.11, "ruEnd": 22.51}, {"id": 6, "zhStart": 42.75, "zhEnd": 48.0, "zhText": "爷爷笑了笑, \"等着看吧。\"", "ruStart": 24.4, "ruEnd": 27.04}, {"id": 7, "zhStart": 49.03, "zhEnd": 58.05, "zhText": "这天下午,爷爷叫我早早地穿上暖和的衣服。", "ruStart": 29.08, "ruEnd": 32.96}, {"id": 8, "zhStart": 59.0, "zhEnd": 66.0, "zhText": "奶奶和妈妈给我们拿了一些吃的。", "ruStart": 34.64, "ruEnd": 37.16}, {"id": 9, "zhStart": 66.47, "zhEnd": 74.0, "zhText": "爷爷把枪放到他自己的大衣服里,", "ruStart": 38.69, "ruEnd": 41.17}, {"id": 10, "zhStart": 74.27, "zhEnd": 83.0, "zhText": "又放进去一种非常有用的东西——香。", "ruStart": 42.63, "ruEnd": 46.29}, {"id": 11, "zhStart": 83.6, "zhEnd": 87.0, "zhText": "啊,我知道了。", "ruStart": 48.07, "ruEnd": 49.31}, {"id": 12, "zhStart": 87.55, "zhEnd": 95.0, "zhText": "这是爷爷打雁的时候用的最黑的办法。", "ruStart": 51.01, "ruEnd": 56.19}, {"id": 13, "zhStart": 95.71, "zhEnd": 104.0, "zhText": "大雁都在远远的地方吃东西、游泳、玩呢。", "ruStart": 57.83, "ruEnd": 61.03}, {"id": 14, "zhStart": 104.9, "zhEnd": 111.0, "zhText": "我们已经找到一个合适的地方,", "ruStart": 62.99, "ruEnd": 64.81}, {"id": 15, "zhStart": 111.9, "zhEnd": 116.0, "zhText": "舒舒服服地坐下来。", "ruStart": 66.49, "ruEnd": 67.57}, {"id": 16, "zhStart": 117.0, "zhEnd": 125.0, "zhText": "这个地方是哨雁可以看见的地方。", "ruStart": 69.37, "ruEnd": 72.41}, {"id": 17, "zhStart": 125.1, "zhEnd": 132.05, "zhText": "这次,我们就是要让哨雁看见我们。", "ruStart": 74.29, "ruEnd": 77.97}, {"id": 18, "zhStart": 133.6, "zhEnd": 138.0, "zhText": "大雁都回来睡觉了,", "ruStart": 79.55, "ruEnd": 81.71}, {"id": 19, "zhStart": 138.6, "zhEnd": 144.0, "zhText": "只有一只哨雁没有睡觉。", "ruStart": 83.51, "ruEnd": 85.63}, {"id": 20, "zhStart": 144.9, "zhEnd": 150.0, "zhText": "那哨雁一会儿走过来看看,", "ruStart": 87.45, "ruEnd": 89.59}, {"id": 21, "zhStart": 150.9, "zhEnd": 155.33, "zhText": "一会儿又走过去看看。", "ruStart": 91.61, "ruEnd": 93.33}, {"id": 22, "zhStart": 156.9, "zhEnd": 164.0, "zhText": "那只头雁看见我们, 也不睡觉了。", "ruStart": 95.25, "ruEnd": 98.13}, {"id": 23, "zhStart": 164.99, "zhEnd": 174.0, "zhText": "要知道,它已经两天没有好好睡觉了啊。", "ruStart": 99.99, "ruEnd": 102.77}, {"id": 24, "zhStart": 174.55, "zhEnd": 177.67, "zhText": "天已经很黑了,", "ruStart": 104.85, "ruEnd": 106.65}, {"id": 25, "zhStart": 179.1, "zhEnd": 182.17, "zhText": "这天晚上特别冷,", "ruStart": 108.65, "ruEnd": 110.71}, {"id": 26, "zhStart": 182.9, "zhEnd": 186.49, "zhText": "可能只有两三度。", "ruStart": 112.69, "ruEnd": 114.95}, {"id": 27, "zhStart": 187.9, "zhEnd": 194.0, "zhText": "大雁都把头放到翅膀下睡觉了。", "ruStart": 116.79, "ruEnd": 119.65}, {"id": 28, "zhStart": 195.25, "zhEnd": 202.19, "zhText": "爷爷从衣服里拿出早已经点着的香,", "ruStart": 121.73, "ruEnd": 124.89}, {"id": 29, "zhStart": 203.0, "zhEnd": 206.0, "zhText": "很快地上下一画,", "ruStart": 127.01, "ruEnd": 128.61}, {"id": 30, "zhStart": 206.6, "zhEnd": 209.0, "zhText": "让哨雁看见,", "ruStart": 129.94, "ruEnd": 131.9}, {"id": 31, "zhStart": 210.3, "zhEnd": 214.26, "zhText": "又很快地放回衣服里。", "ruStart": 133.53, "ruEnd": 135.84}, {"id": 32, "zhStart": 215.57, "zhEnd": 221.06, "zhText": "哨雁看见那点着的红红的香,", "ruStart": 137.5, "ruEnd": 140.62}, {"id": 33, "zhStart": 221.08, "zhEnd": 223.59, "zhText": "觉得有问题,", "ruStart": 142.44, "ruEnd": 144.34}, {"id": 34, "zhStart": 224.26, "zhEnd": 226.49, "zhText": "忙大叫起来。", "ruStart": 146.31, "ruEnd": 147.84}, {"id": 35, "zhStart": 227.74, "zhEnd": 230.0, "zhText": "很多睡觉的大雁,", "ruStart": 149.51, "ruEnd": 153.07}, {"id": 36, "zhStart": 230.5, "zhEnd": 237.0, "zhText": "马上把头从翅膀下拿出来,刚想飞,", "ruStart": 154.79, "ruEnd": 156.25}, {"id": 37, "zhStart": 237.15, "zhEnd": 245.0, "zhText": "可是看看没有什么事,就非常不高兴,", "ruStart": 157.97, "ruEnd": 161.15}, {"id": 38, "zhStart": 246.0, "zhEnd": 253.0, "zhText": "都用翅膀和嘴去打叫自己起来的哨雁。", "ruStart": 163.03, "ruEnd": 164.41}, {"id": 39, "zhStart": 253.95, "zhEnd": 258.25, "zhText": "哨雁觉得很疼,很委屈。", "ruStart": 166.15, "ruEnd": 170.25}, {"id": 40, "zhStart": 259.22, "zhEnd": 262.0, "zhText": "现在知道了吧?", "ruStart": 171.86, "ruEnd": 174.84}, {"id": 41, "zhStart": 262.85, "zhEnd": 269.31, "zhText": "为什么我要说爷爷这个办法黑?", "ruStart": 176.82, "ruEnd": 177.62}, {"id": 42, "zhStart": 270.7, "zhEnd": 273.0, "zhText": "只要再打几次,", "ruStart": 179.48, "ruEnd": 182.48}, {"id": 43, "zhStart": 273.85, "zhEnd": 277.0, "zhText": "那只哨雁就怕了,", "ruStart": 184.76, "ruEnd": 186.64}, {"id": 44, "zhStart": 278.05, "zhEnd": 282.0, "zhText": "看见什么都不再叫了,", "ruStart": 188.72, "ruEnd": 190.4}, {"id": 45, "zhStart": 283.15, "zhEnd": 290.0, "zhText": "那时候爷爷的老枪就要笑了。", "ruStart": 192.44, "ruEnd": 194.9}, {"id": 46, "zhStart": 291.45, "zhEnd": 292.45, "zhText": "谁知道,", "ruStart": 196.74, "ruEnd": 199.26}, {"id": 47, "zhStart": 293.3, "zhEnd": 297.0, "zhText": "这时候头雁跑过来,", "ruStart": 201.37, "ruEnd": 204.73}, {"id": 48, "zhStart": 297.85, "zhEnd": 302.54, "zhText": "不让那些大雁打那只哨雁。", "ruStart": 206.43, "ruEnd": 209.83}, {"id": 49, "zhStart": 303.6, "zhEnd": 307.0, "zhText": "看见头雁这样做,", "ruStart": 211.67, "ruEnd": 213.91}, {"id": 50, "zhStart": 307.77, "zhEnd": 310.99, "zhText": "爷爷有点不高兴。", "ruStart": 215.69, "ruEnd": 217.27}, {"id": 51, "zhStart": 313.3, "zhEnd": 317.0, "zhText": "大雁又睡觉了,", "ruStart": 219.32, "ruEnd": 221.08}, {"id": 52, "zhStart": 317.39, "zhEnd": 325.67, "zhText": "爷爷再一次从衣服里拿出那只点着的香,", "ruStart": 222.86, "ruEnd": 226.1}, {"id": 53, "zhStart": 325.69, "zhEnd": 328.25, "zhText": "让哨雁看见。", "ruStart": 227.92, "ruEnd": 229.9}, {"id": 54, "zhStart": 329.8, "zhEnd": 333.84, "zhText": "那只哨雁又大叫起来,", "ruStart": 231.86, "ruEnd": 234.18}, {"id": 55, "zhStart": 334.98, "zhEnd": 339.03, "zhText": "别的大雁又都过来打它。", "ruStart": 235.98, "ruEnd": 238.52}, {"id": 56, "zhStart": 340.25, "zhEnd": 343.67, "zhText": "头雁再一次帮助它,", "ruStart": 240.45, "ruEnd": 242.25}, {"id": 57, "zhStart": 343.95, "zhEnd": 347.02, "zhText": "不让别的大雁打它。", "ruStart": 244.13, "ruEnd": 246.47}, {"id": 58, "zhStart": 348.05, "zhEnd": 354.12, "zhText": "就这样,一次一次来来回回,", "ruStart": 248.39, "ruEnd": 250.51}, {"id": 59, "zhStart": 354.75, "zhEnd": 357.0, "zhText": "一直到早上,", "ruStart": 252.61, "ruEnd": 253.69}, {"id": 60, "zhStart": 357.4, "zhEnd": 363.18, "zhText": "爷爷怎么都没有办法拿出枪来,", "ruStart": 255.29, "ruEnd": 257.19}, {"id": 61, "zhStart": 363.98, "zhEnd": 367.01, "zhText": "更不要说打雁了。", "ruStart": 259.14, "ruEnd": 261.82}, {"id": 62, "zhStart": 368.25, "zhEnd": 373.0, "zhText": "看着头雁带着雁队飞起来,", "ruStart": 263.7, "ruEnd": 267.04}, {"id": 63, "zhStart": 373.75, "zhEnd": 377.0, "zhText": "接着飞往暖和的地方。", "ruStart": 269.14, "ruEnd": 270.7}, {"id": 64, "zhStart": 377.9, "zhEnd": 385.78, "zhText": "我那打雁远近有名的爷爷,非常非常地不愉快。", "ruStart": 272.7, "ruEnd": 278.06}];
 
-    function goNext() {
-        let nextIndex = currentTrackIndex + 1;
-        if (nextIndex >= playlist.length) nextIndex = 0; 
-        loadTrack(nextIndex, true);
-    }
+const CH5_UNITS = [{"id": 1, "zhStart": 5.89, "zhEnd": 11.73, "zhText": "五、好雁,好雁啊!", "ruStart": 1.13, "ruEnd": 3.75}, {"id": 2, "zhStart": 11.93, "zhEnd": 19.85, "zhText": "可是,就在雁队飞起来以后, 出事了。", "ruStart": 5.23, "ruEnd": 9.49}, {"id": 3, "zhStart": 20.23, "zhEnd": 24.37, "zhText": "一只很大的鹰飞过来了。", "ruStart": 10.93, "ruEnd": 13.05}, {"id": 4, "zhStart": 25.37, "zhEnd": 28.39, "zhText": "鹰很喜欢吃雁。", "ruStart": 14.65, "ruEnd": 16.57}, {"id": 5, "zhStart": 29.49, "zhEnd": 32.92, "zhText": "它看见了一只小雁,", "ruStart": 18.13, "ruEnd": 20.17}, {"id": 6, "zhStart": 32.95, "zhEnd": 38.13, "zhText": "大概觉得是不错的早饭,", "ruStart": 21.73, "ruEnd": 24.77}, {"id": 7, "zhStart": 38.16, "zhEnd": 43.22, "zhText": "就很快地往小雁那里飞。", "ruStart": 26.27, "ruEnd": 29.23}, {"id": 8, "zhStart": 44.51, "zhEnd": 49.8, "zhText": "就在鹰快要吃到那只小雁的时候,", "ruStart": 30.73, "ruEnd": 35.21}, {"id": 9, "zhStart": 50.47, "zhEnd": 57.14, "zhText": "头雁不知道从什么地方很快地飞过来了,", "ruStart": 36.83, "ruEnd": 39.59}, {"id": 10, "zhStart": 57.54, "zhEnd": 63.76, "zhText": "看着那么大的鹰, 头雁一点儿都没怕。", "ruStart": 41.19, "ruEnd": 45.25}, {"id": 11, "zhStart": 64.41, "zhEnd": 66.33, "zhText": "它大叫着,", "ruStart": 47.13, "ruEnd": 48.31}, {"id": 12, "zhStart": 66.35, "zhEnd": 72.13, "zhText": "用自己的翅膀一下又一下地和鹰打,", "ruStart": 49.93, "ruEnd": 52.77}, {"id": 13, "zhStart": 72.67, "zhEnd": 77.77, "zhText": "那只小雁很快地就飞远了。", "ruStart": 54.41, "ruEnd": 56.73}, {"id": 14, "zhStart": 78.54, "zhEnd": 80.91, "zhText": "鹰很不高兴。", "ruStart": 58.64, "ruEnd": 60.36}, {"id": 15, "zhStart": 81.59, "zhEnd": 88.01, "zhText": "现在它一定要吃了这只头雁, 才行。", "ruStart": 61.82, "ruEnd": 66.7}, {"id": 16, "zhStart": 88.21, "zhEnd": 97.61, "zhText": "我和爷爷紧张地看着鹰和头雁 在天上来回打。", "ruStart": 68.84, "ruEnd": 73.84}, {"id": 17, "zhStart": 98.83, "zhEnd": 102.85, "zhText": "鹰的翅膀比头雁的长,", "ruStart": 75.56, "ruEnd": 78.56}, {"id": 18, "zhStart": 103.32, "zhEnd": 106.53, "zhText": "嘴也比头雁的大。", "ruStart": 80.25, "ruEnd": 82.91}, {"id": 19, "zhStart": 107.43, "zhEnd": 108.77, "zhText": "打了一会儿,", "ruStart": 84.93, "ruEnd": 86.37}, {"id": 20, "zhStart": 109.03, "zhEnd": 112.8, "zhText": "头雁的身体上就有伤了,", "ruStart": 88.11, "ruEnd": 90.55}, {"id": 21, "zhStart": 113.17, "zhEnd": 120.97, "zhText": "伤得很重, 翅膀上很多羽毛也掉了下来。", "ruStart": 92.33, "ruEnd": 95.61}, {"id": 22, "zhStart": 121.88, "zhEnd": 130.07, "zhText": "雁队飞远了, 但是头雁已经不行了。", "ruStart": 97.26, "ruEnd": 101.56}, {"id": 23, "zhStart": 130.98, "zhEnd": 135.37, "zhText": "看到鹰就要吃到头雁了,", "ruStart": 103.34, "ruEnd": 106.38}, {"id": 24, "zhStart": 135.82, "zhEnd": 138.78, "zhText": "爷爷忙拿出枪,", "ruStart": 108.42, "ruEnd": 110.24}, {"id": 25, "zhStart": 139.19, "zhEnd": 142.57, "zhText": "往远的地方打了一枪。", "ruStart": 112.24, "ruEnd": 113.72}, {"id": 26, "zhStart": 143.98, "zhEnd": 148.32, "zhText": "鹰怕了, 很快地飞走了,", "ruStart": 115.8, "ruEnd": 118.66}, {"id": 27, "zhStart": 148.83, "zhEnd": 154.83, "zhText": "头雁从很高的地方掉了下来。", "ruStart": 120.57, "ruEnd": 123.31}, {"id": 28, "zhStart": 155.58, "zhEnd": 164.69, "zhText": "它的头上、脖子上、 翅膀上、肚子上都红了。", "ruStart": 125.17, "ruEnd": 130.23}, {"id": 29, "zhStart": 165.3, "zhEnd": 172.25, "zhText": "它已经站不起来了, 它一定非常疼,", "ruStart": 132.03, "ruEnd": 135.19}, {"id": 30, "zhStart": 172.63, "zhEnd": 177.75, "zhText": "可是它好像一点儿都不怕。", "ruStart": 136.71, "ruEnd": 139.49}, {"id": 31, "zhStart": 178.71, "zhEnd": 182.64, "zhText": "它把脖子抬得很高,", "ruStart": 141.38, "ruEnd": 143.28}, {"id": 32, "zhStart": 183.15, "zhEnd": 189.9, "zhText": "用眼睛看看已经飞得很远的雁队,", "ruStart": 144.92, "ruEnd": 148.28}, {"id": 33, "zhStart": 190.49, "zhEnd": 196.54, "zhText": "看看飞走的鹰, 然后又看着爷爷,", "ruStart": 149.94, "ruEnd": 153.84}, {"id": 34, "zhStart": 197.11, "zhEnd": 205.69, "zhText": "那眼睛里有很多很多没办法说出来的东西。", "ruStart": 155.6, "ruEnd": 159.78}, {"id": 35, "zhStart": 206.4, "zhEnd": 210.41, "zhText": "看着伤得很重的头雁,", "ruStart": 161.62, "ruEnd": 163.82}, {"id": 36, "zhStart": 210.62, "zhEnd": 220.05, "zhText": "爷爷一字一字清清楚楚地说, 好雁!", "ruStart": 165.62, "ruEnd": 169.48}, {"id": 37, "zhStart": 220.42, "zhEnd": 222.31, "zhText": "好雁啊!", "ruStart": 171.36, "ruEnd": 172.32}, {"id": 38, "zhStart": 223.67, "zhEnd": 228.07, "zhText": "我们把头雁带回了家。", "ruStart": 173.98, "ruEnd": 176.2}, {"id": 39, "zhStart": 229.03, "zhEnd": 236.23, "zhText": "从这天开始, 爷爷收起了那支老枪,", "ruStart": 177.98, "ruEnd": 181.22}, {"id": 40, "zhStart": 236.26, "zhEnd": 239.22, "zhText": "再也不打雁了。", "ruStart": 182.8, "ruEnd": 184.88}];
 
-    function togglePause() {
-        if (audio.paused) {
-            audio.play();
-            document.getElementById('status-display').innerText = "Играет файл: " + playlist[currentTrackIndex];
-        } else {
-            audio.pause();
-            document.getElementById('status-display').innerText = "⏸ Пауза";
-        }
-    }
+const CHAPTERS = [
+  { id:'ch2', label:'Глава 2', zhSrc:'02.mp3', ruSrc:'02_rus.mp3', units: CH2_UNITS },
+  { id:'ch3', label:'Глава 3', zhSrc:'BOOK/03/03.mp3', ruSrc:'BOOK/03/03_rus.mp3', units: CH3_UNITS },
 
-    function replayTrack() {
-        audio.currentTime = 0;
-        audio.play();
-        document.getElementById('status-display').innerText = "Повтор: " + playlist[currentTrackIndex];
-    }
+  { id:'ch10', label:'Глава 10', zhSrc:'BOOK/10/10.mp3', ruSrc:'BOOK/10/10_rus.mp3', units: CH10_UNITS },
+  { id:'ch4', label:'Глава 4', zhSrc:'BOOK/04/04.mp3', ruSrc:'BOOK/04/04_rus.mp3', units: CH4_UNITS },
+  { id:'ch5', label:'Глава 5', zhSrc:'BOOK/05/05.mp3', ruSrc:'BOOK/05/05_rus.mp3', units: CH5_UNITS },];
+let chapterIdx = 0;
+let UNITS = CHAPTERS[chapterIdx].units;
 
-    function getTranslation() {
-        document.getElementById('status-display').innerText = "🇷🇺 Перевод для файла " + playlist[currentTrackIndex];
-    }
+const zhAudio = document.getElementById('zhAudio');
+const ruAudio = document.getElementById('ruAudio');
+const modeLabel = document.getElementById('modeLabel');
+const statusLine = document.getElementById('statusLine');
+const progressLabel = document.getElementById('progressLabel');
+const barInner = document.getElementById('barInner');
+const waveform = document.getElementById('waveform');
+const fileWarning = document.getElementById('fileWarning');
+const speedSelect = document.getElementById('speedSelect');
 
-    function setSpeed(speed) {
-        audio.playbackRate = speed;
-        const buttons = document.querySelectorAll('.speed-btn');
-        buttons.forEach(btn => btn.classList.remove('active'));
-        event.target.classList.add('active');
-    }
+const replayBtn = document.getElementById('replayBtn');
+const translateBtn = document.getElementById('translateBtn');
+const nextBtn = document.getElementById('nextBtn');
+const prevBtn = document.getElementById('prevBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const sentenceText = document.getElementById('sentenceText');
 
-    // НАСТРОЙКА AIRPODS (РАБОТАЕТ НАПРЯМУЮ С ВАШИМИ ФУНКЦИЯМИ)
-    if ('mediaSession' in navigator) {
-        // 2 касания (nexttrack) -> Команда "Понял — дальше"
-        navigator.mediaSession.setActionHandler('nexttrack', () => {
-            goNext();
-        });
+const tabsEl = document.getElementById('tabs');
 
-        // 3 касания (previoustrack) -> Команда "Показать перевод"
-        navigator.mediaSession.setActionHandler('previoustrack', () => {
-            getTranslation();
-        });
+let idx = 0;
+let mode = 'zh'; // 'zh' | 'ru'
+let paused = false;
+let zhLoopHandler = null;
+let ruEndHandler = null;
 
-        navigator.mediaSession.setActionHandler('play', () => { audio.play(); });
-        navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); });
-    }
+function renderTabs(){
+  tabsEl.innerHTML = '';
+  CHAPTERS.forEach((ch, i) => {
+    const b = document.createElement('button');
+    b.className = 'tab-btn' + (i === chapterIdx ? ' active' : '');
+    b.textContent = ch.label;
+    b.addEventListener('click', () => switchChapter(i));
+    tabsEl.appendChild(b);
+  });
+}
 
-    // Клавиатура ПК
-    document.addEventListener('keydown', (e) => {
-        if (e.code === 'Space') { e.preventDefault(); goNext(); }
-        if (e.key === 't' || e.key === 'е') { getTranslation(); }
-        if (e.key === 'p' || e.key === 'з' || e.key === 'Enter') { togglePause(); }
+function switchChapter(newChapterIdx){
+  if(newChapterIdx === chapterIdx) return;
+  clearHandlers();
+  zhAudio.pause();
+  ruAudio.pause();
+  chapterIdx = newChapterIdx;
+  UNITS = CHAPTERS[chapterIdx].units;
+  zhAudio.src = CHAPTERS[chapterIdx].zhSrc;
+  ruAudio.src = CHAPTERS[chapterIdx].ruSrc;
+  idx = 0;
+  renderTabs();
+  updateProgress();
+  playZhLoop();
+}
+
+// build waveform bars
+const BAR_COUNT = 28;
+for(let i=0;i<BAR_COUNT;i++){
+  const b = document.createElement('div');
+  b.className = 'bar';
+  waveform.appendChild(b);
+}
+const bars = Array.from(waveform.children);
+let waveTimer = null;
+
+function startWaveAnim(cls){
+  stopWaveAnim();
+  waveTimer = setInterval(()=>{
+    bars.forEach(b=>{
+      const h = 6 + Math.random()*40;
+      b.style.height = h+'px';
+      b.classList.add('active');
+      b.classList.toggle('ru', cls==='ru');
     });
+  }, 140);
+}
+function stopWaveAnim(){
+  if(waveTimer){ clearInterval(waveTimer); waveTimer = null; }
+  bars.forEach(b=>{ b.style.height='8px'; b.classList.remove('active'); });
+}
 
-    loadTrack(0, false);
+function clearHandlers(){
+  if(zhLoopHandler){ zhAudio.removeEventListener('timeupdate', zhLoopHandler); zhLoopHandler = null; }
+  if(ruEndHandler){ ruAudio.removeEventListener('timeupdate', ruEndHandler); ruEndHandler = null; }
+}
+
+function updateProgress(){
+  progressLabel.textContent = `Предложение ${idx+1} / ${UNITS.length}`;
+  barInner.style.width = ((idx)/(UNITS.length-1)*100).toFixed(1)+'%';
+}
+
+function setPauseUI(){
+  pauseBtn.textContent = paused ? '▶ Продолжить' : '⏸ Пауза';
+}
+
+function playZhLoop(){
+  clearHandlers();
+  mode = 'zh';
+  paused = false;
+  setPauseUI();
+  const u = UNITS[idx];
+  modeLabel.textContent = '中文 · слушаем предложение (повтор по кругу)';
+  modeLabel.className = 'mode-label zh';
+  sentenceText.textContent = u.zhText;
+  sentenceText.className = 'sentence';
+  statusLine.textContent = 'Играет по кругу — жмите «Понял», когда разберёте фразу';
+  translateBtn.disabled = (u.ruStart === null);
+  zhAudio.pause();
+  ruAudio.pause();
+  zhAudio.playbackRate = parseFloat(speedSelect.value);
+  zhAudio.currentTime = u.zhStart;
+  zhAudio.play().catch(()=>{ fileWarning.style.display='block'; });
+  startWaveAnim('zh');
+
+  zhLoopHandler = () => {
+    if(zhAudio.currentTime >= u.zhEnd - 0.02){
+      zhAudio.currentTime = u.zhStart;
+      if(!paused) zhAudio.play().catch(()=>{});
+    }
+  };
+  zhAudio.addEventListener('timeupdate', zhLoopHandler);
+}
+
+function playTranslationOnce(){
+  const u = UNITS[idx];
+  if(u.ruStart === null) return;
+  clearHandlers();
+  mode = 'ru';
+  paused = false;
+  setPauseUI();
+  modeLabel.textContent = '🇷🇺 перевод (один раз)';
+  modeLabel.className = 'mode-label ru';
+  sentenceText.textContent = '';
+  statusLine.textContent = 'Слушаем перевод один раз, затем снова китайский';
+  zhAudio.pause();
+  ruAudio.playbackRate = 1;
+  ruAudio.currentTime = u.ruStart;
+  ruAudio.play().catch(()=>{ fileWarning.style.display='block'; });
+  startWaveAnim('ru');
+
+  ruEndHandler = () => {
+    if(ruAudio.currentTime >= u.ruEnd - 0.02){
+      ruAudio.pause();
+      clearHandlers();
+      playZhLoop();
+    }
+  };
+  ruAudio.addEventListener('timeupdate', ruEndHandler);
+}
+
+function togglePause(){
+  const activeAudio = (mode==='zh') ? zhAudio : ruAudio;
+  if(!paused){
+    activeAudio.pause();
+    paused = true;
+    stopWaveAnim();
+    statusLine.textContent = 'На паузе';
+  } else {
+    activeAudio.play().catch(()=>{});
+    paused = false;
+    startWaveAnim(mode);
+    statusLine.textContent = (mode==='zh')
+      ? 'Играет по кругу — жмите «Понял», когда разберёте фразу'
+      : 'Слушаем перевод один раз, затем снова китайский';
+  }
+  setPauseUI();
+}
+
+function goTo(newIdx){
+  if(newIdx < 0 || newIdx >= UNITS.length) return;
+  idx = newIdx;
+  updateProgress();
+  playZhLoop();
+}
+
+nextBtn.addEventListener('click', ()=> goTo(idx+1));
+prevBtn.addEventListener('click', ()=> goTo(idx-1));
+replayBtn.addEventListener('click', ()=>{
+  if(mode==='zh') playZhLoop();
+  else playTranslationOnce();
+});
+translateBtn.addEventListener('click', playTranslationOnce);
+pauseBtn.addEventListener('click', togglePause);
+
+speedSelect.addEventListener('change', ()=>{
+  if(mode==='zh') zhAudio.playbackRate = parseFloat(speedSelect.value);
+});
+
+document.addEventListener('keydown', (e)=>{
+  if(e.code === 'Space'){ e.preventDefault(); goTo(idx+1); }
+  else if(e.key === 't' || e.key === 'T'){ playTranslationOnce(); }
+  else if(e.key === 'p' || e.key === 'P' || e.key === 'Enter'){ e.preventDefault(); togglePause(); }
+  else if(e.key === 'ArrowRight'){ goTo(idx+1); }
+  else if(e.key === 'ArrowLeft'){ goTo(idx-1); }
+});
+
+zhAudio.addEventListener('error', ()=>{ fileWarning.style.display='block'; });
+ruAudio.addEventListener('error', ()=>{ fileWarning.style.display='block'; });
+
+zhAudio.src = CHAPTERS[chapterIdx].zhSrc;
+ruAudio.src = CHAPTERS[chapterIdx].ruSrc;
+renderTabs();
+updateProgress();
+playZhLoop();
+
+// ========================================
+// УПРАВЛЕНИЕ С НАУШНИКОВ (MediaSession)
+// NEXTTRACK     -> "дальше" (следующая фраза)
+// PREVIOUSTRACK -> "перевод"
+// PLAY/PAUSE    -> пауза/продолжить
+// ========================================
+if ('mediaSession' in navigator) {
+  navigator.mediaSession.setActionHandler('nexttrack', () => {
+    goTo(idx + 1);
+  });
+
+  navigator.mediaSession.setActionHandler('previoustrack', () => {
+    playTranslationOnce();
+  });
+
+  navigator.mediaSession.setActionHandler('play', () => {
+    if (paused) togglePause();
+  });
+
+  navigator.mediaSession.setActionHandler('pause', () => {
+    if (!paused) togglePause();
+  });
+
+  navigator.mediaSession.setActionHandler('stop', () => {
+    zhAudio.pause();
+    ruAudio.pause();
+  });
+}
 </script>
-
 </body>
 </html>
