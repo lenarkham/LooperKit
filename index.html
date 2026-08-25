@@ -493,7 +493,7 @@ function playZhLoop(){
   ruAudio.pause();
   zhAudio.playbackRate = parseFloat(speedSelect.value);
   zhAudio.currentTime = u.zhStart;
-  zhAudio.play().catch(()=>{ showFileWarning(); });
+  zhAudio.play().catch((err)=>{ if(err.name !== 'NotAllowedError') showFileWarning(); });
   startWaveAnim('zh');
 
   zhLoopHandler = () => {
@@ -520,7 +520,7 @@ function playTranslationOnce(){
   zhAudio.pause();
   ruAudio.playbackRate = 1;
   ruAudio.currentTime = u.ruStart;
-  ruAudio.play().catch(()=>{ showFileWarning(); });
+  ruAudio.play().catch((err)=>{ if(err.name !== 'NotAllowedError') showFileWarning(); });
   startWaveAnim('ru');
 
   ruEndHandler = () => {
@@ -587,6 +587,8 @@ document.addEventListener('keydown', (e)=>{
 
 zhAudio.addEventListener('error', ()=>{ showFileWarning(); });
 ruAudio.addEventListener('error', ()=>{ showFileWarning(); });
+zhAudio.addEventListener('playing', ()=>{ fileWarning.style.display='none'; });
+ruAudio.addEventListener('playing', ()=>{ fileWarning.style.display='none'; });
 
 const remoteBtn = document.getElementById('remoteBtn');
 const remotePanel = document.getElementById('remotePanel');
