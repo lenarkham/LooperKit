@@ -304,9 +304,18 @@
 
   <div class="controls">
     <button class="btn-secondary" id="voiceBtn">🎙 Голос: выкл</button>
+    <button class="btn-secondary" id="remoteBtn">🔵 Пульт Bluetooth</button>
   </div>
   <div class="hint" id="voiceStatus">Нажми «Голос», чтобы включить управление AirPods: «дальше» / «как»</div>
   <div class="hint" id="voiceHeard">Услышано: —</div>
+  <div class="hint" id="remotePanel" style="display:none;">
+    Пульт вроде AB Shutter 3 — это Bluetooth-клавиатура. Ни один сайт не может подключить или переподключить
+    такое устройство программно — браузеры это специально блокируют (иначе сайт мог бы подслушивать нажатия клавиш
+    с любой Bluetooth-клавиатуры). Это ограничение одинаковое во всех браузерах.<br><br>
+    Кнопка ниже открывает список Bluetooth-устройств телефона напрямую (без похода через общее меню настроек) —
+    останется один тап на «AB Shutter3», чтобы переподключить.<br><br>
+    <a href="intent:#Intent;action=android.settings.BLUETOOTH_SETTINGS;end" class="btn-secondary" style="display:inline-block; text-decoration:none; margin-top:8px;">📶 Открыть Bluetooth-настройки</a>
+  </div>
 
   <div class="setting-row">
     <label for="speedSelect">Скорость китайского:</label>
@@ -578,6 +587,12 @@ document.addEventListener('keydown', (e)=>{
 
 zhAudio.addEventListener('error', ()=>{ showFileWarning(); });
 ruAudio.addEventListener('error', ()=>{ showFileWarning(); });
+
+const remoteBtn = document.getElementById('remoteBtn');
+const remotePanel = document.getElementById('remotePanel');
+remoteBtn.addEventListener('click', ()=>{
+  remotePanel.style.display = (remotePanel.style.display === 'none') ? 'block' : 'none';
+});
 
 zhAudio.src = CHAPTERS[chapterIdx].zhSrc;
 ruAudio.src = CHAPTERS[chapterIdx].ruSrc;
