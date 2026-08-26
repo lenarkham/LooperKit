@@ -304,18 +304,9 @@
 
   <div class="controls">
     <button class="btn-secondary" id="voiceBtn">🎙 Голос: выкл</button>
-    <button class="btn-secondary" id="remoteBtn">🔵 Пульт Bluetooth</button>
   </div>
   <div class="hint" id="voiceStatus">Нажми «Голос», чтобы включить управление AirPods: «дальше» / «как»</div>
   <div class="hint" id="voiceHeard">Услышано: —</div>
-  <div class="hint" id="remotePanel" style="display:none;">
-    Пульт вроде AB Shutter 3 — это Bluetooth-клавиатура. Ни один сайт не может подключить или переподключить
-    такое устройство программно — браузеры это специально блокируют (иначе сайт мог бы подслушивать нажатия клавиш
-    с любой Bluetooth-клавиатуры). Это ограничение одинаковое во всех браузерах.<br><br>
-    Кнопка ниже открывает список Bluetooth-устройств телефона напрямую (без похода через общее меню настроек) —
-    останется один тап на «AB Shutter3», чтобы переподключить.<br><br>
-    <a href="intent:#Intent;action=android.settings.BLUETOOTH_SETTINGS;end" class="btn-secondary" style="display:inline-block; text-decoration:none; margin-top:8px;">📶 Открыть Bluetooth-настройки</a>
-  </div>
 
   <div class="setting-row">
     <label for="speedSelect">Скорость китайского:</label>
@@ -355,8 +346,8 @@ const CH1_UNITS = [{"id": 1, "zhStart": 44.95, "zhEnd": 46.0, "zhText": "一", "
 
 const EMPTY_UNITS = [{"id": 1, "zhStart": 0, "zhEnd": 0, "zhText": "Субтитры для этой главы ещё не добавлены", "ruStart": null, "ruEnd": null}];
 const CH6_UNITS = EMPTY_UNITS;
-const CH7_UNITS = EMPTY_UNITS;
-const CH8_UNITS = EMPTY_UNITS;
+const CH7_UNITS = [{"id": 1, "zhStart": 10.75, "zhEnd": 19.76, "zhText": "回到家里,我给头雁做了一个很暖和的小家。", "ruStart": 1.77, "ruEnd": 6.36}, {"id": 2, "zhStart": 20.61, "zhEnd": 27.96, "zhText": "还把我喜欢吃的东西和一个苹果拿给它。", "ruStart": 8.33, "ruEnd": 12.32}, {"id": 3, "zhStart": 29.1, "zhEnd": 37.1, "zhText": "可是,它只喝了一点水,它不动,也不叫。", "ruStart": 13.98, "ruEnd": 18.6}, {"id": 4, "zhStart": 37.46, "zhEnd": 46.06, "zhText": "它在想什么呢?是想它的雁队吗?是想飞吗?", "ruStart": 20.31, "ruEnd": 25.12}, {"id": 5, "zhStart": 49.76, "zhEnd": 57.76, "zhText": "这时候,一只小一点的,非常好看的大雁,叫着飞到了我们的房子上。", "ruStart": 26.71, "ruEnd": 33.6}, {"id": 6, "zhStart": 58.28, "zhEnd": 68.4, "zhText": "它非常好看,羽毛很干净,是一只漂亮的雁姑娘。", "ruStart": 35.04, "ruEnd": 40.11}, {"id": 7, "zhStart": 69.36, "zhEnd": 75.71, "zhText": "头雁看见它,马上高兴地叫起来。", "ruStart": 41.92, "ruEnd": 45.96}, {"id": 8, "zhStart": 76.18, "zhEnd": 84.55, "zhText": "那只大雁也特别高兴,在房子上飞来飞去,", "ruStart": 47.53, "ruEnd": 52.06}, {"id": 9, "zhStart": 84.91, "zhEnd": 97.5, "zhText": "对着头雁叫啊叫,好像在说:「快点上来,和我一起飞吧,我等着你呢。」", "ruStart": 53.42, "ruEnd": 60.25}, {"id": 10, "zhStart": 97.89, "zhEnd": 109.1, "zhText": "可是,头雁伤得太重了,它飞了几次,怎么都飞不起来。", "ruStart": 60.95, "ruEnd": 68.28}, {"id": 11, "zhStart": 110.23, "zhEnd": 119.1, "zhText": "见头雁飞不起来,那只来找它的大雁高兴不起来了。", "ruStart": 70.45, "ruEnd": 77.28}, {"id": 12, "zhStart": 119.5, "zhEnd": 130.4, "zhText": "它的眼睛看着头雁,飞啊,叫啊,上上下下地飞,来来回回地叫。", "ruStart": 79.52, "ruEnd": 86.72}, {"id": 13, "zhStart": 130.86, "zhEnd": 138.46, "zhText": "一下午,叫的嘴里都有红的东西掉出来了,", "ruStart": 88.78, "ruEnd": 93.44}, {"id": 14, "zhStart": 138.49, "zhEnd": 148.1, "zhText": "头雁也对着它叫啊叫,两只大雁的眼睛里好像都有泪。", "ruStart": 95.66, "ruEnd": 100.42}, {"id": 15, "zhStart": 148.65, "zhEnd": 153.57, "zhText": "这两只大雁真的又累又绝望。", "ruStart": 102.38, "ruEnd": 106.56}, {"id": 16, "zhStart": 154.5, "zhEnd": 168.9, "zhText": "晚上下雨了,天气更冷了,我觉得房间外边有点不对,马上跑出去。", "ruStart": 108.81, "ruEnd": 116.91}, {"id": 17, "zhStart": 169.19, "zhEnd": 180.4, "zhText": "「啊!爷爷、奶奶、爸爸、妈妈、哥哥、姐姐,你们快来啊。」", "ruStart": 118.89, "ruEnd": 126.5}, {"id": 18, "zhStart": 180.73, "zhEnd": 194.9, "zhText": "我大叫起来,家里人都跑出来了,住在我家旁边的人听到我叫,也来了。", "ruStart": 129.12, "ruEnd": 136.64}, {"id": 19, "zhStart": 195.23, "zhEnd": 201.75, "zhText": "大家看见,在冷冷的下雨的晚上,", "ruStart": 139.12, "ruEnd": 142.08}, {"id": 20, "zhStart": 201.94, "zhEnd": 211.9, "zhText": "两只大雁长长的脖子缠在一起,已经快要死了。", "ruStart": 143.94, "ruEnd": 149.08}, {"id": 21, "zhStart": 212.27, "zhEnd": 222.01, "zhText": "这时候我才知道,那只好看的大雁是头雁的女朋友,", "ruStart": 151.54, "ruEnd": 156.35}, {"id": 22, "zhStart": 222.44, "zhEnd": 229.9, "zhText": "头雁非常爱它,它也非常爱头雁。", "ruStart": 158.5, "ruEnd": 163.26}, {"id": 23, "zhStart": 230.88, "zhEnd": 238.56, "zhText": "看见头雁不能和自己一起飞了,它很绝望,", "ruStart": 165.3, "ruEnd": 171.17}, {"id": 24, "zhStart": 238.85, "zhEnd": 249.9, "zhText": "就在天黑了的时候飞下来,把自己的长脖子和头雁的缠在一起。", "ruStart": 173.12, "ruEnd": 178.72}, {"id": 25, "zhStart": 250.71, "zhEnd": 257.9, "zhText": "不能一起飞了,两只大雁就想一起死。", "ruStart": 181.08, "ruEnd": 185.32}, {"id": 26, "zhStart": 258.89, "zhEnd": 272.9, "zhText": "爷爷很快地跑过来,把头雁的脖子拿到旁边,两只大雁才没有死。", "ruStart": 187.76, "ruEnd": 194.31}, {"id": 27, "zhStart": 274.29, "zhEnd": 287.9, "zhText": "「我的好雁,我的好孩子。」爷爷这么说的时候,眼睛里都是泪。", "ruStart": 196.29, "ruEnd": 203.81}, {"id": 28, "zhStart": 288.15, "zhEnd": 292.9, "zhText": "「真是打雁打双啊。」", "ruStart": 206.2, "ruEnd": 210.41}, {"id": 29, "zhStart": 293.44, "zhEnd": 302.9, "zhText": "看见两只大雁这样,大家的眼睛里都有很多泪。", "ruStart": 212.76, "ruEnd": 217.03}, {"id": 30, "zhStart": 303.17, "zhEnd": 317.89, "zhText": "从这天晚上开始,村子里的人都不再打雁了。", "ruStart": 218.77, "ruEnd": 223.16}];
+const CH8_UNITS = [{"id": 1, "zhStart": 7.2, "zhEnd": 13.0, "zhText": "8. 两只远近有名的大雁", "ruStart": 1.84, "ruEnd": 4.11}, {"id": 2, "zhStart": 14.85, "zhEnd": 22.0, "zhText": "头雁和它的女朋友在我家住下了。", "ruStart": 6.09, "ruEnd": 9.62}, {"id": 3, "zhStart": 23.21, "zhEnd": 32.24, "zhText": "因为头雁的翅膀旁边有一些白颜色的羽毛,", "ruStart": 11.03, "ruEnd": 14.72}, {"id": 4, "zhStart": 33.6, "zhEnd": 41.0, "zhText": "所以我给了它一个名字,叫小白。", "ruStart": 17.04, "ruEnd": 19.99}, {"id": 5, "zhStart": 41.39, "zhEnd": 52.0, "zhText": "小白女朋友的翅膀旁边有一些好看的黄颜色的羽毛,", "ruStart": 21.72, "ruEnd": 25.92}, {"id": 6, "zhStart": 52.47, "zhEnd": 59.31, "zhText": "所以我给了它一个名字,叫小黄。", "ruStart": 27.85, "ruEnd": 31.23}, {"id": 7, "zhStart": 60.61, "zhEnd": 69.42, "zhText": "没过多长时间,两只大雁就已经知道我家的习惯,", "ruStart": 32.86, "ruEnd": 37.24}, {"id": 8, "zhStart": 70.15, "zhEnd": 75.0, "zhText": "能听懂我家人说话了。", "ruStart": 39.2, "ruEnd": 42.43}, {"id": 9, "zhStart": 76.0, "zhEnd": 83.51, "zhText": "爷爷一叫小白,小白就马上走过去。", "ruStart": 44.12, "ruEnd": 48.26}, {"id": 10, "zhStart": 84.68, "zhEnd": 94.0, "zhText": "奶奶一叫小黄,小黄就马上往奶奶那里看。", "ruStart": 49.9, "ruEnd": 54.56}, {"id": 11, "zhStart": 95.19, "zhEnd": 106.0, "zhText": "妈妈说,现在吃饭了,两只大雁就一起往碗那里走。", "ruStart": 56.92, "ruEnd": 61.48}, {"id": 12, "zhStart": 107.4, "zhEnd": 112.0, "zhText": "哥哥姐姐一说,睡觉睡觉,", "ruStart": 63.96, "ruEnd": 67.88}, {"id": 13, "zhStart": 112.89, "zhEnd": 122.51, "zhText": "小白小黄就一前一后走进自己的小房子里去了。", "ruStart": 70.06, "ruEnd": 75.56}, {"id": 14, "zhStart": 122.75, "zhEnd": 124.56, "zhText": "真有意思!", "ruStart": 77.72, "ruEnd": 79.55}, {"id": 15, "zhStart": 126.44, "zhEnd": 134.5, "zhText": "小白身体上的伤好了一些,能走远一些的路了。", "ruStart": 81.8, "ruEnd": 87.16}, {"id": 16, "zhStart": 135.32, "zhEnd": 144.0, "zhText": "每天我去学校,小白和小黄就跟着我一起去,", "ruStart": 89.44, "ruEnd": 94.08}, {"id": 17, "zhStart": 144.84, "zhEnd": 152.39, "zhText": "有时候走在我前面,有时候走在我后面。", "ruStart": 96.44, "ruEnd": 99.71}, {"id": 18, "zhStart": 152.64, "zhEnd": 159.0, "zhText": "我在教室里学习新字和历史什么的,", "ruStart": 102.44, "ruEnd": 106.2}, {"id": 19, "zhStart": 159.4, "zhEnd": 166.0, "zhText": "小白小黄就在学校门外边玩,等着我。", "ruStart": 108.3, "ruEnd": 113.28}, {"id": 20, "zhStart": 166.65, "zhEnd": 170.0, "zhText": "这两只大雁特别懂事。", "ruStart": 114.98, "ruEnd": 117.78}, {"id": 21, "zhStart": 170.75, "zhEnd": 181.0, "zhText": "我和同学在教室复习,或者在那个很小的图书馆里看书的时候,", "ruStart": 119.56, "ruEnd": 125.32}, {"id": 22, "zhStart": 181.54, "zhEnd": 185.61, "zhText": "小黄小白一点儿都不叫。", "ruStart": 127.76, "ruEnd": 130.03}, {"id": 23, "zhStart": 186.15, "zhEnd": 202.0, "zhText": "等我们上音乐课的时候,小白小黄就跟着大叫起来,好像也在唱歌、跳舞。", "ruStart": 132.52, "ruEnd": 139.48}, {"id": 24, "zhStart": 202.4, "zhEnd": 209.39, "zhText": "这么懂事的大雁,老师和同学都很喜欢。", "ruStart": 142.12, "ruEnd": 146.53}, {"id": 25, "zhStart": 209.78, "zhEnd": 220.0, "zhText": "可是,有一天,我们班一个名叫狗狗的同学对我说,", "ruStart": 148.81, "ruEnd": 153.2}, {"id": 26, "zhStart": 220.28, "zhEnd": 232.0, "zhText": "\"你以为你的大雁是最好的吗?告诉你吧,你的大雁没有我的狗好。", "ruStart": 155.63, "ruEnd": 162.63}, {"id": 27, "zhStart": 232.75, "zhEnd": 238.58, "zhText": "我的狗已经学会帮爸爸买茶,", "ruStart": 164.92, "ruEnd": 168.6}, {"id": 28, "zhStart": 238.6, "zhEnd": 248.39, "zhText": "帮妈妈买菜,帮弟弟买水果,帮妹妹买小本儿了。", "ruStart": 170.79, "ruEnd": 178.15}, {"id": 29, "zhStart": 249.15, "zhEnd": 252.0, "zhText": "你的大雁会吗?\"", "ruStart": 180.68, "ruEnd": 181.95}, {"id": 30, "zhStart": 252.65, "zhEnd": 257.39, "zhText": "狗狗的话,说得我有点儿不高兴。", "ruStart": 184.44, "ruEnd": 187.4}, {"id": 31, "zhStart": 258.11, "zhEnd": 269.0, "zhText": "我想,我的大雁那么懂事,你的狗行,我的大雁一定也不差。", "ruStart": 189.84, "ruEnd": 196.69}, {"id": 32, "zhStart": 269.96, "zhEnd": 275.46, "zhText": "从那天开始,我一有空儿,", "ruStart": 198.51, "ruEnd": 202.26}, {"id": 33, "zhStart": 275.49, "zhEnd": 287.0, "zhText": "就带小白小黄去村子里的小商店,看着别人买东西,", "ruStart": 204.28, "ruEnd": 210.66}, {"id": 34, "zhStart": 287.23, "zhEnd": 299.0, "zhText": "还一次又一次地对小白小黄说,\"记着,商店,这是商店。\"", "ruStart": 212.7, "ruEnd": 219.06}, {"id": 35, "zhStart": 299.67, "zhEnd": 309.0, "zhText": "过了一些天,小白小黄就认识去小商店的路了。", "ruStart": 220.99, "ruEnd": 225.85}, {"id": 36, "zhStart": 309.65, "zhEnd": 313.95, "zhText": "我想试试我的大雁。", "ruStart": 228.37, "ruEnd": 230.96}, {"id": 37, "zhStart": 313.98, "zhEnd": 323.0, "zhText": "一天上午,我在小白的脖子那儿放上一个小包,", "ruStart": 232.91, "ruEnd": 236.84}, {"id": 38, "zhStart": 323.75, "zhEnd": 331.35, "zhText": "小包里放着跟妈妈要来的五分钱,", "ruStart": 239.09, "ruEnd": 243.45}, {"id": 39, "zhStart": 331.38, "zhEnd": 341.0, "zhText": "再用笔在一个小本子上写上\"买一支红笔\"几个字,", "ruStart": 245.56, "ruEnd": 251.19}, {"id": 40, "zhStart": 341.81, "zhEnd": 355.0, "zhText": "放进小包里,告诉小白小黄说,\"去吧,到商店里给我买一支红笔。\"", "ruStart": 253.11, "ruEnd": 259.92}, {"id": 41, "zhStart": 355.4, "zhEnd": 363.0, "zhText": "小白小黄就真的出了门,往小商店走。", "ruStart": 262.76, "ruEnd": 267.32}, {"id": 42, "zhStart": 364.33, "zhEnd": 374.0, "zhText": "我远远地跟着看,见小白小黄真的进了商店。", "ruStart": 269.8, "ruEnd": 275.48}, {"id": 43, "zhStart": 374.88, "zhEnd": 387.0, "zhText": "卖东西的阿姨早就知道小白小黄的故事,也非常喜欢小白小黄。", "ruStart": 277.67, "ruEnd": 285.13}, {"id": 44, "zhStart": 387.75, "zhEnd": 395.66, "zhText": "现在看见小白小黄像狗狗家的狗一样,", "ruStart": 287.31, "ruEnd": 292.31}, {"id": 45, "zhStart": 395.68, "zhEnd": 402.0, "zhText": "脖子上带着小包来了,阿姨就笑了。", "ruStart": 294.6, "ruEnd": 298.37}, {"id": 46, "zhStart": 402.81, "zhEnd": 406.0, "zhText": "从小包里拿出钱,", "ruStart": 300.28, "ruEnd": 303.09}, {"id": 47, "zhStart": 406.03, "zhEnd": 418.0, "zhText": "又拿出我写着字的本子看了看,然后把一支红笔放进小包里。", "ruStart": 305.4, "ruEnd": 312.12}, {"id": 48, "zhStart": 418.65, "zhEnd": 427.0, "zhText": "小白和小黄就高高兴兴地叫着回家了。", "ruStart": 314.61, "ruEnd": 317.8}, {"id": 49, "zhStart": 428.01, "zhEnd": 436.56, "zhText": "看见小白小黄这么懂事,爸爸妈妈一忙起来,", "ruStart": 320.17, "ruEnd": 326.0}, {"id": 50, "zhStart": 436.59, "zhEnd": 444.99, "zhText": "也常常叫小白小黄去帮着买东西。", "ruStart": 328.2, "ruEnd": 331.96}, {"id": 51, "zhStart": 445.61, "zhEnd": 453.89, "zhText": "奶奶不会写字,就在本子上画上要买的东西,", "ruStart": 334.6, "ruEnd": 339.59}, {"id": 52, "zhStart": 454.23, "zhEnd": 463.0, "zhText": "小白小黄也能把奶奶要的东西买回来,真有意思。", "ruStart": 342.02, "ruEnd": 349.71}, {"id": 53, "zhStart": 463.92, "zhEnd": 467.65, "zhText": "在狗狗生日那天,", "ruStart": 351.68, "ruEnd": 353.57}, {"id": 54, "zhStart": 468.05, "zhEnd": 482.0, "zhText": "我叫小白小黄到小商店里给狗狗买了一块只能玩不能走的表做礼物。", "ruStart": 356.28, "ruEnd": 364.12}, {"id": 55, "zhStart": 482.35, "zhEnd": 488.92, "zhText": "虽然很便宜,但是狗狗非常高兴,", "ruStart": 366.64, "ruEnd": 369.91}, {"id": 56, "zhStart": 488.95, "zhEnd": 495.99, "zhText": "说我的狗好,你的大雁也好。", "ruStart": 372.26, "ruEnd": 376.52}, {"id": 57, "zhStart": 496.72, "zhEnd": 507.37, "zhText": "没过多长时间,小白和小黄的事,远近的村子就都知道了。", "ruStart": 379.11, "ruEnd": 385.49}, {"id": 58, "zhStart": 508.15, "zhEnd": 513.0, "zhText": "小白小黄已经很有名了。", "ruStart": 387.84, "ruEnd": 390.77}, {"id": 59, "zhStart": 513.68, "zhEnd": 528.48, "zhText": "有一天,两个男人和一个小姐开着车来到村子里,那个小姐看见人就问:", "ruStart": 393.11, "ruEnd": 400.58}, {"id": 60, "zhStart": 529.44, "zhEnd": 541.0, "zhText": "\"听说你们村子里有两只大雁?\"村子里的人就把他们带到我家。", "ruStart": 402.6, "ruEnd": 409.61}, {"id": 61, "zhStart": 542.0, "zhEnd": 546.93, "zhText": "他们一看见小白和小黄,", "ruStart": 411.28, "ruEnd": 415.06}, {"id": 62, "zhStart": 546.96, "zhEnd": 556.39, "zhText": "马上拿出一个大包,包住小白小黄,就带走了。", "ruStart": 417.29, "ruEnd": 422.61}, {"id": 63, "zhStart": 557.45, "zhEnd": 565.0, "zhText": "他们自己介绍说,他们是动物保护协会的。", "ruStart": 424.57, "ruEnd": 429.6}, {"id": 64, "zhStart": 565.98, "zhEnd": 573.0, "zhText": "村子里的人都问,什么叫动物保护协会?", "ruStart": 431.84, "ruEnd": 436.78}, {"id": 65, "zhStart": 573.7, "zhEnd": 582.06, "zhText": "那个小姐就说,咱们国家的动物保护协会,", "ruStart": 439.68, "ruEnd": 443.68}, {"id": 66, "zhStart": 582.09, "zhEnd": 591.0, "zhText": "是今年才有的一个协会,所以你们不知道。", "ruStart": 446.02, "ruEnd": 451.08}, {"id": 67, "zhStart": 591.95, "zhEnd": 603.4, "zhText": "也就是说,我们是一个爱动物、保护动物、不让人们打动物的协会。", "ruStart": 453.6, "ruEnd": 460.0}, {"id": 68, "zhStart": 603.81, "zhEnd": 611.95, "zhText": "没有了小白小黄,我们家的人都很不愉快,", "ruStart": 463.24, "ruEnd": 467.24}, {"id": 69, "zhStart": 612.3, "zhEnd": 626.21, "zhText": "爷爷奶奶睡不好觉,爸爸妈妈不说话,哥哥姐姐不唱也不笑。", "ruStart": 469.81, "ruEnd": 476.68}, {"id": 70, "zhStart": 626.98, "zhEnd": 640.69, "zhText": "我天天吃不下饭,家里好像一下少了很多东西,再也没有了快乐。", "ruStart": 478.66, "ruEnd": 485.68}];
 const CH9_UNITS = EMPTY_UNITS;
 const CH11_UNITS = EMPTY_UNITS;
 
@@ -493,7 +484,7 @@ function playZhLoop(){
   ruAudio.pause();
   zhAudio.playbackRate = parseFloat(speedSelect.value);
   zhAudio.currentTime = u.zhStart;
-  zhAudio.play().catch((err)=>{ if(err.name !== 'NotAllowedError') showFileWarning(); });
+  zhAudio.play().catch(()=>{ showFileWarning(); });
   startWaveAnim('zh');
 
   zhLoopHandler = () => {
@@ -520,7 +511,7 @@ function playTranslationOnce(){
   zhAudio.pause();
   ruAudio.playbackRate = 1;
   ruAudio.currentTime = u.ruStart;
-  ruAudio.play().catch((err)=>{ if(err.name !== 'NotAllowedError') showFileWarning(); });
+  ruAudio.play().catch(()=>{ showFileWarning(); });
   startWaveAnim('ru');
 
   ruEndHandler = () => {
@@ -577,44 +568,16 @@ speedSelect.addEventListener('change', ()=>{
   if(mode==='zh') zhAudio.playbackRate = parseFloat(speedSelect.value);
 });
 
-const HOLD_MS = 500;
-let nextKeyHoldTimer = null;
-let nextKeyHoldTriggered = false;
-
 document.addEventListener('keydown', (e)=>{
-  if(e.code === 'Space' || e.key === 'ArrowRight'){
-    e.preventDefault();
-    if(e.repeat) return;
-    nextKeyHoldTriggered = false;
-    nextKeyHoldTimer = setTimeout(()=>{
-      nextKeyHoldTriggered = true;
-      togglePause();
-    }, HOLD_MS);
-  }
+  if(e.code === 'Space'){ e.preventDefault(); goTo(idx+1); }
   else if(e.key === 't' || e.key === 'T'){ playTranslationOnce(); }
   else if(e.key === 'p' || e.key === 'P' || e.key === 'Enter'){ e.preventDefault(); togglePause(); }
+  else if(e.key === 'ArrowRight'){ goTo(idx+1); }
   else if(e.key === 'ArrowLeft'){ goTo(idx-1); }
-});
-
-document.addEventListener('keyup', (e)=>{
-  if(e.code === 'Space' || e.key === 'ArrowRight'){
-    clearTimeout(nextKeyHoldTimer);
-    if(!nextKeyHoldTriggered){
-      goTo(idx+1);
-    }
-  }
 });
 
 zhAudio.addEventListener('error', ()=>{ showFileWarning(); });
 ruAudio.addEventListener('error', ()=>{ showFileWarning(); });
-zhAudio.addEventListener('playing', ()=>{ fileWarning.style.display='none'; });
-ruAudio.addEventListener('playing', ()=>{ fileWarning.style.display='none'; });
-
-const remoteBtn = document.getElementById('remoteBtn');
-const remotePanel = document.getElementById('remotePanel');
-remoteBtn.addEventListener('click', ()=>{
-  remotePanel.style.display = (remotePanel.style.display === 'none') ? 'block' : 'none';
-});
 
 zhAudio.src = CHAPTERS[chapterIdx].zhSrc;
 ruAudio.src = CHAPTERS[chapterIdx].ruSrc;
