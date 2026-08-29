@@ -134,13 +134,13 @@
   }
   .unit-slider{
     max-width:680px;
-    height:2px;
+    height:1px;
     border-radius:1px;
     margin-bottom:22px;
     background:linear-gradient(to right, var(--violet-2) 0%, var(--muted) var(--fill,10%), #232326 var(--fill,10%), #232326 100%);
   }
   .unit-slider::-webkit-slider-runnable-track{
-    height:2px;
+    height:1px;
     border-radius:1px;
     background:transparent;
   }
@@ -153,15 +153,15 @@
     background:#fff;
     box-shadow:0 0 0 3px rgba(255,255,255,.16), 0 2px 8px rgba(0,0,0,.4);
     cursor:pointer;
-    margin-top:-5.5px;
+    margin-top:-6px;
   }
   .unit-slider::-moz-range-track{
-    height:2px;
+    height:1px;
     border-radius:1px;
     background:#232326;
   }
   .unit-slider::-moz-range-progress{
-    height:2px;
+    height:1px;
     border-radius:1px;
     background:linear-gradient(to right, var(--violet-2) 0%, var(--muted) 100%);
   }
@@ -527,8 +527,8 @@
 
 <div class="top-row">
   <div class="brand">
-    <h1>大雁 · 听力训练</h1>
-    <p class="tagline">Слушаем. Понимаем. Запоминаем.</p>
+    <h1>LooperKit</h1>
+    <p class="tagline">我家的大雁飞走了 · 赵少玲</p>
   </div>
 </div>
 
@@ -592,6 +592,10 @@
   </div>
 </div>
 
+<!-- preload вернул на "auto": с "metadata" ломалось повторное воспроизведение
+     перевода (ruAudio) — после первого раза звук пропадал, похоже, локальный
+     сервер не всегда корректно отдаёт повторные Range-запросы при перемотке.
+     Рабочая перемотка важнее экономии памяти. -->
 <audio id="zhAudio" preload="auto"></audio>
 <audio id="ruAudio" preload="auto"></audio>
 
@@ -707,6 +711,10 @@ let waveTimer = null;
 
 function startWaveAnim(cls){
   stopWaveAnim();
+  // Интервал увеличен со 140мс до 400мс — на слабых/старых Android
+  // частое обновление DOM у 28 элементов каждые 140мс создавало
+  // лишнюю нагрузку на главный поток и могло способствовать
+  // подвисаниям во время воспроизведения.
   waveTimer = setInterval(()=>{
     bars.forEach(b=>{
       const h = 6 + Math.random()*40;
@@ -714,7 +722,7 @@ function startWaveAnim(cls){
       b.classList.add('active');
       b.classList.toggle('ru', cls==='ru');
     });
-  }, 140);
+  }, 400);
 }
 function stopWaveAnim(){
   if(waveTimer){ clearInterval(waveTimer); waveTimer = null; }
@@ -889,12 +897,29 @@ if ('mediaSession' in navigator) {
 // Поэтому нужно один раз нажать "Голос", чтобы включить —
 // дальше распознавание само перезапускается после каждой
 // команды, руки больше не нужны.
+//
+// ДИАГНОСТИКА: на старых Android микрофон может "приглушать"
+// (audio ducking) или прерывать воспроизведение <audio>, пока
+// распознавание активно и постоянно перезапускается. Чтобы
+// проверить, не в этом ли причина зависаний/пропадания звука,
+// временно выключите голосовое управление флагом ниже —
+// кнопка "Голос" останется на экране, но будет неактивна.
+// Когда протестируете и убедитесь, что дело не в этом (или
+// наоборот — в этом), верните VOICE_ENABLED = true.
 // ========================================
+const VOICE_ENABLED = false; // <-- поставьте true, чтобы снова включить голосовое управление
 (() => {
   const voiceBtn = document.getElementById('voiceBtn');
   const voiceStatus = document.getElementById('voiceStatus');
   const voiceHeard = document.getElementById('voiceHeard');
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!VOICE_ENABLED) {
+    voiceBtn.disabled = true;
+    voiceBtn.textContent = 'Голос: выключено (тест)';
+    voiceStatus.textContent = 'Голосовое управление временно отключено для диагностики зависаний.';
+    return;
+  }
 
   if (!SR) {
     voiceBtn.disabled = true;
@@ -954,8 +979,7 @@ if ('mediaSession' in navigator) {
   });
 })();
 </script>
-</body>
-</html>
+
 <script>
 // ========================================
 // ЧИСТО ВИЗУАЛЬНЫЕ ДОПОЛНЕНИЯ (не влияют на функционал):
@@ -986,7 +1010,9 @@ if ('mediaSession' in navigator) {
     unitSlider.addEventListener('input', () => syncFill(unitSlider, '--fill'));
     // unitSlider.value также меняется программно (не через input-события),
     // поэтому подстраховываемся периодической синхронизацией.
-    setInterval(() => syncFill(unitSlider, '--fill'), 200);
+    // Интервал увеличен с 200мс до 500мс для снижения нагрузки на
+    // главный поток на слабых/старых Android-устройствах.
+    setInterval(() => syncFill(unitSlider, '--fill'), 500);
   }
 
   if(voiceBtn){
@@ -999,3 +1025,5 @@ if ('mediaSession' in navigator) {
   }
 })();
 </script>
+</body>
+</html>
