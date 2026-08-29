@@ -70,6 +70,13 @@
     color:var(--muted);
     margin:0;
   }
+  .book-title{
+    margin:0;
+    max-width:58%;
+    text-align:right;
+    font-size:13px;
+    color:var(--muted);
+  }
   .nav-small{
     display:flex;
     gap:8px;
@@ -375,6 +382,16 @@
   .controls + .controls{
     margin-top:16px;
   }
+  .controls-playback button{
+    width:min(46%, 220px);
+  }
+  .controls-bookmarks{
+    margin-top:12px !important;
+  }
+  .controls-bookmarks button{
+    padding:9px 13px;
+    font-size:13px;
+  }
   button{
     font-family:inherit;
     font-size:15px;
@@ -443,6 +460,20 @@
     margin-top:14px;
     line-height:1.5;
   }
+  .bookmark-list{
+    display:none;
+    margin:14px 0 0;
+    padding:10px;
+    text-align:left;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:rgba(255,255,255,.025);
+  }
+  .bookmark-list.open{display:block;}
+  .bookmark-empty{color:var(--muted); font-size:13px; padding:4px;}
+  .bookmark-item{display:flex; gap:8px; align-items:center; margin:6px 0;}
+  .bookmark-jump{flex:1; text-align:left; padding:8px 10px; font-size:13px;}
+  .bookmark-remove{padding:7px 9px; color:var(--muted);}
   #voiceHeard{
     color:var(--muted);
   }
@@ -519,7 +550,8 @@
 
   @media (max-width:480px){
     .sentence{font-size:24px;}
-    .top-row{flex-direction:column; align-items:flex-start;}
+    .top-row{flex-direction:row; align-items:flex-start;}
+    .book-title{max-width:62%; font-size:12px;}
     .tab-btn{width:38px;}
   }
 </style>
@@ -528,8 +560,8 @@
 <div class="top-row">
   <div class="brand">
     <h1>LooperKit</h1>
-    <p class="tagline">我家的大雁飞走了 · 赵少玲</p>
   </div>
+  <p class="book-title">我家的大雁飞走了 · 赵少玲</p>
 </div>
 
 <div class="tabs" id="tabs"></div>
@@ -553,20 +585,22 @@
     <div class="waveform" id="waveform"></div>
   </div>
 
-  <div class="status" id="statusLine">Играет по кругу — жмите «Понял», когда разберёте фразу</div>
+  <div class="status" id="statusLine">Играет по кругу — нажмите «ДАЛЬШЕ», когда разберёте фразу</div>
 
-  <div class="controls">
-    <button class="btn-secondary" id="pauseBtn">Пауза</button>
+  <div class="controls controls-playback">
     <button class="btn-secondary" id="translateBtn">ПЕРЕВОД</button>
     <button class="btn-primary" id="nextBtn">ДАЛЬШЕ</button>
   </div>
 
-  <div class="controls">
-    <button class="btn-ghost" id="prevBtn" title="Предыдущее предложение">← Пред.</button>
+  <div class="controls controls-playback">
+    <button class="btn-secondary" id="pauseBtn">Пауза</button>
+    <button class="btn-secondary" id="prevBtn" title="Предыдущее предложение">НАЗАД</button>
   </div>
-  <div class="hint-inline" id="voiceStatus"></div>
-  <div class="hint-inline" id="voiceHeard">Услышано: —</div>
-
+  <div class="controls controls-bookmarks">
+    <button class="btn-ghost" id="bookmarkBtn">☆ Закладка</button>
+    <button class="btn-ghost" id="bookmarksBtn">Закладки</button>
+  </div>
+  <div class="bookmark-list" id="bookmarkList"></div>
   <div class="setting-row">
     <label for="speedSelect">Скорость китайского:</label>
     <select id="speedSelect">
@@ -575,11 +609,15 @@
       <option value="0.75">0.75×</option>
       <option value="0.6">0.6×</option>
     </select>
-    <button id="voiceBtn">Голос: выкл</button>
-  </div>
-
-  <div class="hint">
-    Пробел — «Понял / дальше». T — перевод. P или Enter — пауза/пуск. ← / → — назад/вперёд по фразам.
+    <label for="repeatSelect">Повтор:</label>
+    <select id="repeatSelect" title="Сколько раз проигрывать фразу">
+      <option value="1">1 раз</option>
+      <option value="2">2 раза</option>
+      <option value="3">3 раза</option>
+      <option value="5">5 раз</option>
+      <option value="10">10 раз</option>
+      <option value="Infinity" selected>∞</option>
+    </select>
   </div>
 </div>
 
@@ -633,7 +671,14 @@ const CHAPTERS = [
   { id:'ch10', label:'10', zhSrc:'BOOK/10/10.mp3', ruSrc:'BOOK/10/10_rus.mp3', units: CH10_UNITS },
   { id:'ch11', label:'11', zhSrc:'BOOK/11/11.mp3', ruSrc:'BOOK/11/11_rus.mp3', units: CH11_UNITS },
 ];
-let chapterIdx = 0;
+const STATE_KEY = 'looperkit-dayan-state-v1';
+function readSavedState(){
+  try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; }
+  catch (_) { return {}; }
+}
+const savedState = readSavedState();
+let chapterIdx = Number.isInteger(savedState.chapterIdx) && savedState.chapterIdx >= 0 && savedState.chapterIdx < CHAPTERS.length
+  ? savedState.chapterIdx : 0;
 let UNITS = CHAPTERS[chapterIdx].units;
 
 const zhAudio = document.getElementById('zhAudio');
@@ -643,12 +688,16 @@ const progressLabel = document.getElementById('progressLabel');
 const waveform = document.getElementById('waveform');
 const fileWarning = document.getElementById('fileWarning');
 const speedSelect = document.getElementById('speedSelect');
+const repeatSelect = document.getElementById('repeatSelect');
 
 const translateBtn = document.getElementById('translateBtn');
 const nextBtn = document.getElementById('nextBtn');
 const prevBtn = document.getElementById('prevBtn');
 const pauseBtn = document.getElementById('pauseBtn');
 const sentenceText = document.getElementById('sentenceText');
+const bookmarkBtn = document.getElementById('bookmarkBtn');
+const bookmarksBtn = document.getElementById('bookmarksBtn');
+const bookmarkList = document.getElementById('bookmarkList');
 
 const tabsEl = document.getElementById('tabs');
 const unitSlider = document.getElementById('unitSlider');
@@ -656,11 +705,44 @@ const volumeSlider = document.getElementById('volumeSlider');
 const volumeValue = document.getElementById('volumeValue');
 const fwFiles = document.getElementById('fwFiles');
 
-let idx = 0;
+let idx = Number.isInteger(savedState.idx) && savedState.idx >= 0 && savedState.idx < UNITS.length ? savedState.idx : 0;
 let mode = 'zh'; // 'zh' | 'ru'
 let paused = false;
 let zhLoopHandler = null;
 let ruEndHandler = null;
+let repeatCompleted = 0;
+let bookmarks = Array.isArray(savedState.bookmarks) ? savedState.bookmarks : [];
+
+if ([...speedSelect.options].some(o => o.value === String(savedState.speed))) speedSelect.value = String(savedState.speed);
+if (Number.isFinite(savedState.volume)) volumeSlider.value = Math.max(0, Math.min(100, savedState.volume));
+if ([...repeatSelect.options].some(o => o.value === String(savedState.repeat))) repeatSelect.value = String(savedState.repeat);
+
+function saveState(){
+  localStorage.setItem(STATE_KEY, JSON.stringify({
+    chapterIdx, idx, speed: speedSelect.value, volume: Number(volumeSlider.value), repeat: repeatSelect.value, bookmarks
+  }));
+}
+
+function currentBookmarkIndex(){ return bookmarks.findIndex(b => b.chapterIdx === chapterIdx && b.idx === idx); }
+function updateBookmarkButton(){ bookmarkBtn.textContent = currentBookmarkIndex() === -1 ? '☆ Закладка' : '★ В закладках'; }
+function renderBookmarks(){
+  bookmarkList.innerHTML = '';
+  if (!bookmarks.length) { bookmarkList.innerHTML = '<div class="bookmark-empty">Закладок пока нет.</div>'; return; }
+  bookmarks.forEach((b, bookmarkIdx) => {
+    const item = document.createElement('div'); item.className = 'bookmark-item';
+    const jump = document.createElement('button'); jump.className = 'btn-ghost bookmark-jump';
+    jump.textContent = `Глава ${b.chapterIdx + 1} · фраза ${b.idx + 1}`;
+    jump.addEventListener('click', () => { switchChapter(b.chapterIdx, b.idx); bookmarkList.classList.remove('open'); });
+    const remove = document.createElement('button'); remove.className = 'btn-ghost bookmark-remove'; remove.textContent = '×'; remove.title = 'Удалить закладку';
+    remove.addEventListener('click', () => { bookmarks.splice(bookmarkIdx, 1); saveState(); renderBookmarks(); updateBookmarkButton(); });
+    item.append(jump, remove); bookmarkList.appendChild(item);
+  });
+}
+function toggleBookmark(){
+  const found = currentBookmarkIndex();
+  if (found === -1) bookmarks.push({ chapterIdx, idx }); else bookmarks.splice(found, 1);
+  saveState(); renderBookmarks(); updateBookmarkButton();
+}
 
 function renderTabs(){
   tabsEl.innerHTML = '';
@@ -673,8 +755,8 @@ function renderTabs(){
   });
 }
 
-function switchChapter(newChapterIdx){
-  if(newChapterIdx === chapterIdx) return;
+function switchChapter(newChapterIdx, newIdx = 0){
+  if(newChapterIdx === chapterIdx && newIdx === idx) return;
   clearHandlers();
   zhAudio.pause();
   ruAudio.pause();
@@ -683,9 +765,10 @@ function switchChapter(newChapterIdx){
   UNITS = CHAPTERS[chapterIdx].units;
   zhAudio.src = CHAPTERS[chapterIdx].zhSrc;
   ruAudio.src = CHAPTERS[chapterIdx].ruSrc;
-  idx = 0;
+  idx = Math.max(0, Math.min(newIdx, UNITS.length - 1));
   renderTabs();
   updateProgress();
+  updateBookmarkButton();
   playZhLoop();
 }
 
@@ -739,6 +822,7 @@ function updateProgress(){
   unitSlider.min = 1;
   unitSlider.max = UNITS.length;
   unitSlider.value = idx+1;
+  saveState();
 }
 
 function setPauseUI(){
@@ -751,19 +835,36 @@ function playZhLoop(){
   paused = false;
   setPauseUI();
   const u = UNITS[idx];
+  repeatCompleted = 0;
   sentenceText.textContent = u.zhText;
   sentenceText.className = 'sentence';
-  statusLine.textContent = 'Играет по кругу — жмите «Понял», когда разберёте фразу';
+  statusLine.textContent = 'Играет по кругу — нажмите «ДАЛЬШЕ», когда разберёте фразу';
   translateBtn.disabled = (u.ruStart === null);
   zhAudio.pause();
   ruAudio.pause();
   zhAudio.playbackRate = parseFloat(speedSelect.value);
   zhAudio.currentTime = u.zhStart;
-  zhAudio.play().catch(()=>{ showFileWarning(); });
-  startWaveAnim('zh');
+  zhAudio.play().then(()=> startWaveAnim('zh')).catch(err=>{
+    if(err && err.name !== 'NotAllowedError') showFileWarning();
+  });
 
   zhLoopHandler = () => {
     if(zhAudio.currentTime >= u.zhEnd - 0.02){
+      const target = repeatSelect.value === 'Infinity' ? Infinity : Number(repeatSelect.value);
+      if (repeatCompleted + 1 >= target) {
+        if (idx < UNITS.length - 1) {
+          goTo(idx + 1);
+        } else {
+          zhAudio.pause();
+          paused = true;
+          stopWaveAnim();
+          playBoundarySound('end');
+          statusLine.textContent = 'Глава завершена';
+          setPauseUI();
+        }
+        return;
+      }
+      repeatCompleted++;
       zhAudio.currentTime = u.zhStart;
       if(!paused) zhAudio.play().catch(()=>{});
     }
@@ -809,17 +910,40 @@ function togglePause(){
     paused = false;
     startWaveAnim(mode);
     statusLine.textContent = (mode==='zh')
-      ? 'Играет по кругу — жмите «Понял», когда разберёте фразу'
+      ? 'Играет по кругу — нажмите «ДАЛЬШЕ», когда разберёте фразу'
       : 'Слушаем перевод один раз, затем снова китайский';
   }
   setPauseUI();
 }
 
 function goTo(newIdx){
-  if(newIdx < 0 || newIdx >= UNITS.length) return;
+  if(newIdx < 0 || newIdx >= UNITS.length){
+    playBoundarySound(newIdx < 0 ? 'start' : 'end');
+    statusLine.textContent = newIdx < 0 ? 'Это первая фраза главы' : 'Это последняя фраза главы';
+    return;
+  }
   idx = newIdx;
   updateProgress();
+  updateBookmarkButton();
   playZhLoop();
+}
+
+let soundContext = null;
+function playBoundarySound(kind){
+  const AudioCtor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioCtor) return;
+  try {
+    soundContext ||= new AudioCtor();
+    if (soundContext.state === 'suspended') soundContext.resume();
+    const osc = soundContext.createOscillator();
+    const gain = soundContext.createGain();
+    osc.frequency.value = kind === 'end' ? 660 : 440;
+    gain.gain.setValueAtTime(0.0001, soundContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.12, soundContext.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, soundContext.currentTime + 0.13);
+    osc.connect(gain).connect(soundContext.destination);
+    osc.start(); osc.stop(soundContext.currentTime + 0.14);
+  } catch (_) {}
 }
 
 nextBtn.addEventListener('click', ()=> goTo(idx+1));
@@ -834,14 +958,20 @@ volumeSlider.addEventListener('input', ()=>{
   zhAudio.volume = vol;
   ruAudio.volume = vol;
   volumeValue.textContent = volumeSlider.value + '%';
+  saveState();
 });
 pauseBtn.addEventListener('click', togglePause);
+bookmarkBtn.addEventListener('click', toggleBookmark);
+bookmarksBtn.addEventListener('click', ()=> bookmarkList.classList.toggle('open'));
 
 speedSelect.addEventListener('change', ()=>{
   if(mode==='zh') zhAudio.playbackRate = parseFloat(speedSelect.value);
+  saveState();
 });
+repeatSelect.addEventListener('change', saveState);
 
 document.addEventListener('keydown', (e)=>{
+  if(['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
   if(e.code === 'Space'){ e.preventDefault(); goTo(idx+1); }
   else if(e.key === 't' || e.key === 'T'){ playTranslationOnce(); }
   else if(e.key === 'p' || e.key === 'P' || e.key === 'Enter'){ e.preventDefault(); togglePause(); }
@@ -856,6 +986,9 @@ zhAudio.src = CHAPTERS[chapterIdx].zhSrc;
 ruAudio.src = CHAPTERS[chapterIdx].ruSrc;
 renderTabs();
 updateProgress();
+volumeSlider.dispatchEvent(new Event('input'));
+renderBookmarks();
+updateBookmarkButton();
 playZhLoop();
 
 // ========================================
@@ -912,6 +1045,7 @@ const VOICE_ENABLED = false; // <-- поставьте true, чтобы снов
   const voiceBtn = document.getElementById('voiceBtn');
   const voiceStatus = document.getElementById('voiceStatus');
   const voiceHeard = document.getElementById('voiceHeard');
+  if (!voiceBtn || !voiceStatus || !voiceHeard) return;
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!VOICE_ENABLED) {
